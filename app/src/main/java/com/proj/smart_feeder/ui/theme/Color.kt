@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.theme // проверьте ваш package name
+package com.proj.smart_feeder.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

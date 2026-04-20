@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.theme
+package com.proj.smart_feeder.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme

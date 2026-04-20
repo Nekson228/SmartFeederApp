@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.proj.smart_feeder
 
 import org.junit.Test
 
