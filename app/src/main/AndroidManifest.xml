@@ -9,12 +9,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MyApplication">
+        android:theme="@style/Theme.SmartFeeder">
         <activity
             android:name="com.proj.smart_feeder.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MyApplication">
+            android:theme="@style/Theme.SmartFeeder">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
