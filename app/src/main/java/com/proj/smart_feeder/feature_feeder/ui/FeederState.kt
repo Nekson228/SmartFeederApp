@@ -1,4 +1,4 @@
-package com.proj.smart_feeder.feature_feeder.data
+package com.proj.smart_feeder.feature_feeder.ui
 
 import java.time.Instant
 

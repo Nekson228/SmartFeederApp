@@ -1,7 +1,9 @@
-package com.proj.smart_feeder.feature_feeder.data
+package com.proj.smart_feeder.feature_feeder.data.impl
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
+import com.proj.smart_feeder.feature_feeder.ui.FeederState
 import java.sql.Timestamp
 
 class DummyFeederRepository: FeederRepository {

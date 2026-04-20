@@ -2,9 +2,8 @@ package com.proj.smart_feeder.feature_profiles.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.proj.smart_feeder.feature_profiles.data.PetProfile
-import com.proj.smart_feeder.feature_profiles.data.ProfilesRepository
-import com.proj.smart_feeder.feature_profiles.data.ProfilesState
+import com.proj.smart_feeder.feature_profiles.domain.PetProfile
+import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +23,6 @@ class ProfilesViewModel(
     private fun loadProfiles() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            // Simulating loading from repository
             repository.getProfiles().collect { profiles ->
                 _uiState.update {
                     it.copy(

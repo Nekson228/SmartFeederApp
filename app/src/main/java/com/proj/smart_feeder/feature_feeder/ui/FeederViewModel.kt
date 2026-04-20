@@ -2,7 +2,7 @@ package com.proj.smart_feeder.feature_feeder.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.proj.smart_feeder.feature_feeder.data.*
+import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
