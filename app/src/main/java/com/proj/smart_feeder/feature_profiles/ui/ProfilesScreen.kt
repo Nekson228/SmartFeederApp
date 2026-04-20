@@ -20,17 +20,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
-import com.proj.smart_feeder.feature_profiles.data.PetProfile
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.rememberAsyncImagePainter
+import com.proj.smart_feeder.feature_profiles.domain.PetProfile
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsState()
-    val pagerState = rememberPagerState(initialPage = 0) { 
-        if (state.profiles.isEmpty()) 1 else state.profiles.size 
+    val pagerState = rememberPagerState {
+        if (state.profiles.isEmpty()) 0 else state.profiles.size
     }
-    
+
     var showStatsBottomSheet by remember { mutableStateOf(false) }
     var selectedProfileForStats by remember { mutableStateOf<PetProfile?>(null) }
     val sheetState = rememberModalBottomSheetState()
@@ -43,7 +45,7 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
     }
 
     Scaffold { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
+        Column(modifier = Modifier.fillMaxSize().padding(padding).padding(top = 16.dp)) {
             Text(
                 text = "Питомцы",
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -58,9 +60,9 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
                     horizontalArrangement = Arrangement.Center
                 ) {
                     repeat(state.profiles.size) { iteration ->
-                        val color = if (pagerState.currentPage == iteration) 
-                            MaterialTheme.colorScheme.primary 
-                        else 
+                        val color = if (pagerState.currentPage == iteration)
+                            MaterialTheme.colorScheme.primary
+                        else
                             MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                         Box(
                             modifier = Modifier
@@ -71,24 +73,26 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
                         )
                     }
                 }
-            }
-            
-            if (state.profiles.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Профили не найдены")
-                }
-            } else {
-                HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize()
+                ) { page ->
+                    val currentProfile = state.profiles[page]
                     PetProfileContent(
-                        profile = state.profiles[page],
+                        profile = currentProfile,
                         onSave = { name, breed, age, weight, photoUri ->
-                            viewModel.updateProfile(state.profiles[page].id, name, breed, age, weight, photoUri)
+                            viewModel.updateProfile(currentProfile.id, name, breed, age, weight, photoUri)
                         },
                         onStatsClick = {
-                            selectedProfileForStats = state.profiles[page]
+                            selectedProfileForStats = currentProfile
                             showStatsBottomSheet = true
                         }
                     )
+                }
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Профили не найдены")
                 }
             }
         }
@@ -121,7 +125,6 @@ fun PetStatisticsDetail(profile: PetProfile) {
         )
         Spacer(Modifier.height(16.dp))
 
-        // Крупный график
         Card(
             modifier = Modifier.fillMaxWidth().height(200.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
@@ -206,16 +209,12 @@ fun PetProfileContent(
                     contentAlignment = Alignment.Center
                 ) {
                     if (photoUri != null) {
-                        androidx.compose.foundation.layout.Box(modifier = Modifier.fillMaxSize()) {
-                            androidx.compose.ui.layout.ContentScale.run {
-                                androidx.compose.foundation.Image(
-                                    painter = coil.compose.rememberAsyncImagePainter(photoUri),
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
-                                )
-                            }
-                        }
+                        Image(
+                            painter = rememberAsyncImagePainter(photoUri),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
                     } else {
                         Icon(
                             Icons.Default.Pets,
@@ -224,8 +223,7 @@ fun PetProfileContent(
                             tint = MaterialTheme.colorScheme.onSecondary
                         )
                     }
-                    
-                    // Маленькая иконка редактирования поверх фото
+
                     Box(
                         Modifier
                             .align(Alignment.BottomEnd)

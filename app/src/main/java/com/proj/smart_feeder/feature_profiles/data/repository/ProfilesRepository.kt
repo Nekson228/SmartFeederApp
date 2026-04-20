@@ -1,5 +1,6 @@
-package com.proj.smart_feeder.feature_profiles.data
+package com.proj.smart_feeder.feature_profiles.data.repository
 
+import com.proj.smart_feeder.feature_profiles.domain.PetProfile
 import kotlinx.coroutines.flow.Flow
 
 interface ProfilesRepository {

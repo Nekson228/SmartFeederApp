@@ -3,22 +3,12 @@ package com.proj.smart_feeder
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -28,17 +18,20 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.proj.smart_feeder.feature_feeder.ui.FeederScreen
 import com.proj.smart_feeder.feature_profiles.ui.ProfilesScreen
+import com.proj.smart_feeder.feature_settings.ui.SettingsScreen
+import com.proj.smart_feeder.feature_settings.ui.SettingsViewModel
 import com.proj.smart_feeder.ui.theme.*
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            // Состояние темы (true - Mocha/Dark, false - Latte/Light)
-            var isDarkMode by remember { mutableStateOf(true) }
+            val settingsViewModel: SettingsViewModel = koinViewModel()
+            val settingsState by settingsViewModel.uiState.collectAsState()
 
-            SmartBowlTheme(darkTheme = isDarkMode) {
-                MainContainer(isDarkMode = isDarkMode, onThemeChange = { isDarkMode = it })
+            SmartBowlTheme(darkTheme = settingsState.isDarkMode) {
+                MainContainer()
             }
         }
     }
@@ -51,7 +44,7 @@ sealed class Screen(val route: String, val icon: androidx.compose.ui.graphics.ve
 }
 
 @Composable
-fun MainContainer(isDarkMode: Boolean, onThemeChange: (Boolean) -> Unit) {
+fun MainContainer() {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) },
@@ -64,7 +57,7 @@ fun MainContainer(isDarkMode: Boolean, onThemeChange: (Boolean) -> Unit) {
         ) {
             composable(Screen.Feeder.route) { FeederScreen() }
             composable(Screen.Profiles.route) { ProfilesScreen() }
-            composable(Screen.Settings.route) { SettingsScreen(isDarkMode, onThemeChange) }
+            composable(Screen.Settings.route) { SettingsScreen() }
         }
     }
 }
@@ -90,57 +83,5 @@ fun BottomNavigationBar(navController: NavHostController) {
                 }
             )
         }
-    }
-}
-
-
-// --- ЭКРАН 3: НАСТРОЙКИ ---
-@Composable
-fun SettingsScreen(isDarkMode: Boolean, onThemeChange: (Boolean) -> Unit) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
-        Text("Настройки", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-
-        Spacer(modifier = Modifier.height(24.dp))
-        Text("Внешний вид", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
-        SettingsItem("Темная тема") {
-            Switch(checked = isDarkMode, onCheckedChange = { onThemeChange(it) })
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Типы уведомлений", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
-
-        NotificationGroup("Критические", listOf("Корм закончился", "Засор в дозаторе", "Миска отключена"))
-        NotificationGroup("Здоровье", listOf("Скорость поедания снизилась"))
-        NotificationGroup("Информационные", listOf("Отчет о кормлении"))
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Система", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
-        SettingsItem("Очистить кэш приложения") {
-            Button(onClick = {}, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)) {
-                Text("124 МБ")
-            }
-        }
-    }
-}
-
-@Composable
-fun NotificationGroup(title: String, items: List<String>) {
-    Column(modifier = Modifier.padding(vertical = 8.dp)) {
-        Text(title, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f))
-        items.forEach { item ->
-            var checked by remember { mutableStateOf(true) }
-            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(item, fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface)
-                Checkbox(checked = checked, onCheckedChange = { checked = it })
-            }
-        }
-    }
-}
-
-@Composable
-fun SettingsItem(title: String, trailing: @Composable () -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 12.dp), Arrangement.SpaceBetween, Alignment.CenterVertically) {
-        Text(title, color = MaterialTheme.colorScheme.onSurface)
-        trailing()
     }
 }
