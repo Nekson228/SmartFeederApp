@@ -16,8 +16,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.proj.smart_feeder.feature_feeder.ui.FeederScreen
 import com.proj.smart_feeder.ui.theme.*
 
 class MainActivity : ComponentActivity() {
@@ -45,7 +44,7 @@ class MainActivity : ComponentActivity() {
 }
 
 sealed class Screen(val route: String, val icon: androidx.compose.ui.graphics.vector.ImageVector, val label: String) {
-    data object Home : Screen("home", Icons.Default.Home, "Главная")
+    data object Feeder : Screen("home", Icons.Default.Home, "Главная")
     data object Profiles : Screen("profiles", Icons.Default.Pets, "Питомцы")
     data object Settings : Screen("settings", Icons.Default.Settings, "Настройки")
 }
@@ -59,10 +58,10 @@ fun MainContainer(isDarkMode: Boolean, onThemeChange: (Boolean) -> Unit) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Home.route,
+            startDestination = Screen.Feeder.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Home.route) { HomeScreen() }
+            composable(Screen.Feeder.route) { FeederScreen() }
             composable(Screen.Profiles.route) { ProfilesScreen() }
             composable(Screen.Settings.route) { SettingsScreen(isDarkMode, onThemeChange) }
         }
@@ -71,7 +70,7 @@ fun MainContainer(isDarkMode: Boolean, onThemeChange: (Boolean) -> Unit) {
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
-    val items = listOf(Screen.Home, Screen.Profiles, Screen.Settings)
+    val items = listOf(Screen.Feeder, Screen.Profiles, Screen.Settings)
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
@@ -93,62 +92,6 @@ fun BottomNavigationBar(navController: NavHostController) {
     }
 }
 
-// --- ЭКРАН 1: ГЛАВНАЯ ---
-@Composable
-fun HomeScreen() {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
-        Text(
-            text = "Моя кормушка",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth().height(160.dp),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Box(modifier = Modifier.fillMaxSize().padding(20.dp)) {
-                Column {
-                    Text("Запас корма", fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary)
-                    Text("850г / 1кг", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
-                    Spacer(modifier = Modifier.height(12.dp))
-                    LinearProgressIndicator(
-                        progress = { 0.85f },
-                        modifier = Modifier.fillMaxWidth().height(8.dp).clip(CircleShape),
-                        color = MaterialTheme.colorScheme.tertiary,
-                        trackColor = Color.White.copy(alpha = 0.3f)
-                    )
-                }
-                Icon(
-                    imageVector = Icons.Default.Wifi,
-                    contentDescription = null,
-                    modifier = Modifier.align(Alignment.TopEnd),
-                    tint = MaterialTheme.colorScheme.tertiary
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-        Text("Последние кормления", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-
-        val feedings = listOf("14:00 — 50г", "08:30 — 60г", "Вчера — 55г")
-        feedings.forEach { feeding ->
-            Card(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-            ) {
-                Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.CheckCircle, null, tint = MaterialTheme.colorScheme.tertiary)
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(feeding, color = MaterialTheme.colorScheme.onSurface)
-                }
-            }
-        }
-    }
-}
 
 // --- ЭКРАН 2: ПРОФИЛИ ---
 @Composable
