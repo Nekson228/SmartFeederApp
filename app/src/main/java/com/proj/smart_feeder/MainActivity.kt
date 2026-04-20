@@ -27,6 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.proj.smart_feeder.feature_feeder.ui.FeederScreen
+import com.proj.smart_feeder.feature_profiles.ui.ProfilesScreen
 import com.proj.smart_feeder.ui.theme.*
 
 class MainActivity : ComponentActivity() {
@@ -92,86 +93,6 @@ fun BottomNavigationBar(navController: NavHostController) {
     }
 }
 
-
-// --- ЭКРАН 2: ПРОФИЛИ ---
-@Composable
-fun ProfilesScreen() {
-    val pagerState = rememberPagerState(initialPage = 0) { 1 } // Кол-во питомцев
-    Column(modifier = Modifier.fillMaxSize().padding(top = 16.dp)) {
-        Text(
-            text = "Питомцы",
-            modifier = Modifier.padding(horizontal = 16.dp),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
-        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
-            PetProfileContent()
-        }
-    }
-}
-
-@Composable
-fun PetProfileContent() {
-    var name by remember { mutableStateOf("Барсик") }
-    var age by remember { mutableStateOf("3 года") }
-    var weight by remember { mutableStateOf("5.4 кг") }
-    var breed by remember { mutableStateOf("Британская") }
-
-    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
-        Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-            Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(modifier = Modifier.size(100.dp).background(MaterialTheme.colorScheme.secondary, CircleShape), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.Pets, null, modifier = Modifier.size(50.dp), tint = MaterialTheme.colorScheme.onSecondary)
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Имя") }, modifier = Modifier.fillMaxWidth())
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(value = breed, onValueChange = { breed = it }, label = { Text("Порода") }, modifier = Modifier.fillMaxWidth())
-                Row(Modifier.fillMaxWidth()) {
-                    OutlinedTextField(value = age, onValueChange = { age = it }, label = { Text("Возраст") }, modifier = Modifier.weight(1f))
-                    Spacer(Modifier.width(8.dp))
-                    OutlinedTextField(value = weight, onValueChange = { weight = it }, label = { Text("Вес") }, modifier = Modifier.weight(1f))
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-        Text("Статистика питания", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-
-        Card(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-            Column(Modifier.padding(16.dp)) {
-                Row(Modifier.fillMaxWidth().height(100.dp), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
-                    val stats = listOf(0.4f, 0.8f, 0.6f, 1f, 0.7f, 0.9f, 0.5f)
-                    stats.forEach { h ->
-                        Box(Modifier.width(25.dp).fillMaxHeight(h).background(MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)))
-                    }
-                }
-                Spacer(Modifier.height(8.dp))
-                Text("Объем за последние 7 дней (среднее: 320г/день)", fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-        Text("Недавние фото с кормушки", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-
-        LazyRow(contentPadding = PaddingValues(vertical = 8.dp)) {
-            items(5) { index ->
-                Card(Modifier.size(140.dp).padding(end = 12.dp), shape = RoundedCornerShape(16.dp)) {
-                    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant), contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.Image, null, tint = MaterialTheme.colorScheme.onSurface.copy(0.3f), modifier = Modifier.size(40.dp))
-                        Text("Photo #$index", modifier = Modifier.align(Alignment.BottomCenter).padding(4.dp), fontSize = 10.sp)
-                    }
-                }
-            }
-        }
-
-        Button(onClick = { /* Сохранение */ }, modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
-            Text("Сохранить изменения")
-        }
-        Spacer(modifier = Modifier.height(100.dp)) // Запас под BottomBar
-    }
-}
 
 // --- ЭКРАН 3: НАСТРОЙКИ ---
 @Composable
