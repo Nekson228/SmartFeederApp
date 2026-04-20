@@ -36,14 +36,19 @@ class ProfilesViewModel(
         }
     }
 
-    fun updateProfile(id: String, name: String, breed: String, age: String, weight: String) {
+    fun updateProfile(id: String, name: String, breed: String, age: String, weight: String, photoUri: String?) {
         viewModelScope.launch {
             val currentProfile = _uiState.value.profiles.find { it.id == id }
             currentProfile?.let {
-                val updated = it.copy(name = name, breed = breed, age = age, weight = weight)
+                val updated = it.copy(
+                    name = name,
+                    breed = breed,
+                    age = age,
+                    weight = weight,
+                    photoUri = photoUri
+                )
                 repository.updateProfile(updated)
-                // In a real app, we would re-fetch or the flow would emit automatically
-                loadProfiles() 
+                loadProfiles()
             }
         }
     }

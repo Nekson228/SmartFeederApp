@@ -1,6 +1,8 @@
 package com.proj.smart_feeder.feature_profiles.ui
 
 import androidx.compose.foundation.*
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.pager.HorizontalPager
@@ -79,8 +81,8 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
                 HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
                     PetProfileContent(
                         profile = state.profiles[page],
-                        onSave = { name, breed, age, weight ->
-                            viewModel.updateProfile(state.profiles[page].id, name, breed, age, weight)
+                        onSave = { name, breed, age, weight, photoUri ->
+                            viewModel.updateProfile(state.profiles[page].id, name, breed, age, weight, photoUri)
                         },
                         onStatsClick = {
                             selectedProfileForStats = state.profiles[page]
@@ -173,13 +175,20 @@ fun PetStatisticsDetail(profile: PetProfile) {
 @Composable
 fun PetProfileContent(
     profile: PetProfile,
-    onSave: (String, String, String, String) -> Unit,
+    onSave: (String, String, String, String, String?) -> Unit,
     onStatsClick: () -> Unit
 ) {
     var name by remember(profile.id) { mutableStateOf(profile.name) }
     var breed by remember(profile.id) { mutableStateOf(profile.breed) }
     var age by remember(profile.id) { mutableStateOf(profile.age) }
     var weight by remember(profile.id) { mutableStateOf(profile.weight) }
+    var photoUri by remember(profile.id) { mutableStateOf(profile.photoUri) }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        photoUri = uri?.toString()
+    }
 
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
         Card(
@@ -189,15 +198,42 @@ fun PetProfileContent(
         ) {
             Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
-                    modifier = Modifier.size(100.dp).background(MaterialTheme.colorScheme.secondary, CircleShape),
+                    modifier = Modifier
+                        .size(100.dp)
+                        .background(MaterialTheme.colorScheme.secondary, CircleShape)
+                        .clip(CircleShape)
+                        .clickable { imagePickerLauncher.launch("image/*") },
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        Icons.Default.Pets,
-                        null,
-                        modifier = Modifier.size(50.dp),
-                        tint = MaterialTheme.colorScheme.onSecondary
-                    )
+                    if (photoUri != null) {
+                        androidx.compose.foundation.layout.Box(modifier = Modifier.fillMaxSize()) {
+                            androidx.compose.ui.layout.ContentScale.run {
+                                androidx.compose.foundation.Image(
+                                    painter = coil.compose.rememberAsyncImagePainter(photoUri),
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                )
+                            }
+                        }
+                    } else {
+                        Icon(
+                            Icons.Default.Pets,
+                            null,
+                            modifier = Modifier.size(50.dp),
+                            tint = MaterialTheme.colorScheme.onSecondary
+                        )
+                    }
+                    
+                    // Маленькая иконка редактирования поверх фото
+                    Box(
+                        Modifier
+                            .align(Alignment.BottomEnd)
+                            .background(MaterialTheme.colorScheme.primary, CircleShape)
+                            .padding(4.dp)
+                    ) {
+                        Icon(Icons.Default.Edit, null, modifier = Modifier.size(16.dp), tint = Color.White)
+                    }
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 OutlinedTextField(
@@ -289,7 +325,7 @@ fun PetProfileContent(
         }
 
         Button(
-            onClick = { onSave(name, breed, age, weight) },
+            onClick = { onSave(name, breed, age, weight, photoUri) },
             modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
         ) {
             Text("Сохранить изменения")
