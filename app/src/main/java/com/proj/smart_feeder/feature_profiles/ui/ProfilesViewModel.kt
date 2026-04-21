@@ -46,7 +46,6 @@ class ProfilesViewModel(
                     photoUri = photoUri
                 )
                 repository.updateProfile(updated)
-                loadProfiles()
             }
         }
     }

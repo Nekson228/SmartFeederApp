@@ -3,10 +3,12 @@ package com.proj.smart_feeder.feature_profiles.data.impl
 import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
 import com.proj.smart_feeder.feature_profiles.domain.PetProfile
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class DummyProfilesRepository : ProfilesRepository {
-    private var profilesList = mutableListOf(
+    private val _profiles = MutableStateFlow(listOf(
         PetProfile(
             id = "1",
             name = "Барсик",
@@ -45,16 +47,13 @@ class DummyProfilesRepository : ProfilesRepository {
                 "Вчера, 07:30 — 100г"
             )
         )
-    )
+    ))
 
-    override fun getProfiles(): Flow<List<PetProfile>> = flow {
-        emit(profilesList)
-    }
+    override fun getProfiles(): Flow<List<PetProfile>> = _profiles.asStateFlow()
 
     override suspend fun updateProfile(updatedProfile: PetProfile) {
-        val index = profilesList.indexOfFirst { it.id == updatedProfile.id }
-        if (index != -1) {
-            profilesList[index] = updatedProfile
+        _profiles.update { list ->
+            list.map { if (it.id == updatedProfile.id) updatedProfile else it }
         }
     }
 }

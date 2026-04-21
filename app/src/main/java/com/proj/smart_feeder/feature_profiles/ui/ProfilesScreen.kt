@@ -76,7 +76,8 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
 
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    beyondViewportPageCount = 1
                 ) { page ->
                     val currentProfile = state.profiles[page]
                     PetProfileContent(
