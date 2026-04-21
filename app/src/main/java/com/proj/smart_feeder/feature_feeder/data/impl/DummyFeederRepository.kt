@@ -4,7 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
 import com.proj.smart_feeder.feature_feeder.ui.FeederState
-import java.sql.Timestamp
+import kotlin.time.Clock
 
 class DummyFeederRepository: FeederRepository {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -13,7 +13,7 @@ class DummyFeederRepository: FeederRepository {
             isLoading = false,
             currentFoodGrams = 800,
             maxFoodCapacityGrams = 1000,
-            lastSeenTimestamp = Timestamp(System.currentTimeMillis()).toInstant(),
+            lastSeenTimestamp = Clock.System.now()
         )
     }
 

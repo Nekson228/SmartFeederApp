@@ -27,7 +27,7 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = LatteBase,
     onSurface = LatteText,
     error = LatteRed,
-    onSecondary = Color.White
+    onSecondary = LatteBase
 )
 
 @Composable
