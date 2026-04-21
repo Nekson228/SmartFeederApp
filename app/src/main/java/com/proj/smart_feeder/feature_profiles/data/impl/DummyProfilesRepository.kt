@@ -12,7 +12,13 @@ class DummyProfilesRepository : ProfilesRepository {
             name = "Барсик",
             breed = "Британская",
             age = "3 года",
-            weight = "5.4 кг"
+            weight = "5.4 кг",
+            feedingStats = listOf(0.4f, 0.8f, 0.6f, 1f, 0.7f, 0.9f, 0.5f),
+            feedingHistory = listOf(
+                "Сегодня, 08:30 — 60г",
+                "Вчера, 20:15 — 55г",
+                "Вчера, 12:00 — 60г"
+            )
         ),
         PetProfile(
             id = "2",
@@ -20,7 +26,11 @@ class DummyProfilesRepository : ProfilesRepository {
             breed = "Сиамская",
             age = "2 года",
             weight = "4.1 кг",
-            feedingStats = listOf(0.6f, 0.4f, 0.9f, 0.5f, 0.8f, 0.3f, 1f)
+            feedingStats = listOf(0.6f, 0.4f, 0.9f, 0.5f, 0.8f, 0.3f, 1f),
+            feedingHistory = listOf(
+                "Сегодня, 09:00 — 40г",
+                "Вчера, 21:00 — 45г"
+            )
         ),
         PetProfile(
             id = "3",
@@ -28,7 +38,12 @@ class DummyProfilesRepository : ProfilesRepository {
             breed = "Мейн-кун",
             age = "5 лет",
             weight = "8.2 кг",
-            feedingStats = listOf(1f, 0.9f, 1f, 0.8f, 0.9f, 1f, 0.9f)
+            feedingStats = listOf(1f, 0.9f, 1f, 0.8f, 0.9f, 1f, 0.9f),
+            feedingHistory = listOf(
+                "Сегодня, 07:30 — 100г",
+                "Вчера, 19:30 — 100г",
+                "Вчера, 07:30 — 100г"
+            )
         )
     )
 
