@@ -1,6 +1,6 @@
 package com.proj.smart_feeder.feature_feeder.ui
 
-import java.time.Instant
+import kotlin.time.Instant
 
 data class FeederState(
     val isLoading: Boolean = true,

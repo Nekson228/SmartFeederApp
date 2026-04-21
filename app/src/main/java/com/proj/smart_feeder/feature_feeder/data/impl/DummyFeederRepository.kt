@@ -1,10 +1,19 @@
+<<<<<<<< Updated upstream:app/src/main/java/com/proj/smart_feeder/feature_feeder/data/impl/DummyFeederRepository.kt
 package com.proj.smart_feeder.feature_feeder.data.impl
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
 import com.proj.smart_feeder.feature_feeder.ui.FeederState
+========
+package com.proj.smart_feeder.feature_feeder.data.repository
+
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.proj.smart_feeder.feature_feeder.data.FeederState
+>>>>>>>> Stashed changes:app/src/main/java/com/proj/smart_feeder/feature_feeder/data/repository/DummyFeederRepository.kt
 import java.sql.Timestamp
+import kotlin.time.Instant
 
 class DummyFeederRepository: FeederRepository {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -13,7 +22,7 @@ class DummyFeederRepository: FeederRepository {
             isLoading = false,
             currentFoodGrams = 800,
             maxFoodCapacityGrams = 1000,
-            lastSeenTimestamp = Timestamp(System.currentTimeMillis()).toInstant(),
+            lastSeenTimestamp = Timestamp(System.currentTimeMillis()).toInstant() as Instant?,
         )
     }
 

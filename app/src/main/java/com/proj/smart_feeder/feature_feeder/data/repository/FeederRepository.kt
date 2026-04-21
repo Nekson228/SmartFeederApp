@@ -1,6 +1,4 @@
-package com.proj.smart_feeder.feature_feeder.data.repository
-
-import com.proj.smart_feeder.feature_feeder.ui.FeederState
+package com.proj.smart_feeder.feature_feeder.data
 
 interface FeederRepository {
     suspend fun getFeederState(): FeederState
