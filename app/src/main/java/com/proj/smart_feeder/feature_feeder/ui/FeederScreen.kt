@@ -75,7 +75,6 @@ fun FeederScreen(viewModel: FeederViewModel = koinViewModel()) {
                         tint = wifiTint
                     )
                     val timeText = state.lastSeenTimestamp?.let {
-                        @android.annotation.SuppressLint("NewApi")
                         val millis = it.toEpochMilliseconds()
                         android.text.format.DateUtils.getRelativeTimeSpanString(millis).toString()
                     } ?: ""

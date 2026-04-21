@@ -1,7 +1,6 @@
 package com.proj.smart_feeder.di
 
 import com.proj.smart_feeder.feature_feeder.data.impl.DummyFeederRepository
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import org.koin.core.module.dsl.*
 import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
