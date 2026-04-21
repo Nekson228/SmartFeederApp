@@ -4,10 +4,7 @@ import com.proj.smart_feeder.core.cache.DataStoreManager
 import com.proj.smart_feeder.feature_feeder.data.network.FeederApi
 import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
 import com.proj.smart_feeder.feature_feeder.ui.FeederState
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
 import com.proj.smart_feeder.feature_feeder.data.network.FeederStateResponse
 
@@ -30,21 +27,32 @@ class NetworkFeederRepository(
                         errorMessage = null
                     )
                 } catch (e: Exception) {
-                    FeederState(isLoading = false, errorMessage = "Error parsing cache")
+                    null
                 }
             } else {
-                FeederState(isLoading = true)
+                null
             }
         }
 
-        return flow {
+        return flow<FeederState> {
+            val initialCache = cacheFlow.firstOrNull()
+            if (initialCache != null) {
+                emit(initialCache)
+            } else {
+                emit(FeederState(isLoading = true))
+            }
+
             try {
                 val response = api.getFeederState()
                 cache.saveToCache(DataStoreManager.FEEDER_STATE_KEY, json.encodeToString(response))
             } catch (e: Exception) {
+                if (initialCache == null) {
+                    emit(FeederState(isLoading = false, errorMessage = "Ошибка сети и отсутствие данных в кэше"))
+                }
             }
-            emitAll(cacheFlow)
-        }
+
+            emitAll(cacheFlow.filterNotNull())
+        }.distinctUntilChanged()
     }
 
     override fun getRecentFeedings(): Flow<List<String>> = flow {

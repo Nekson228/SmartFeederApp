@@ -31,7 +31,7 @@ val networkModule = module {
         val json: Json = get()
         val client: OkHttpClient = get()
         Retrofit.Builder()
-            .baseUrl("https://api.example.com/") // Замените на реальный URL
+            .baseUrl("https://api.example.com/") // TODO: заменить на реальный url
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()

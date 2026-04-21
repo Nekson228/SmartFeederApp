@@ -11,7 +11,6 @@ import com.proj.smart_feeder.feature_settings.ui.SettingsViewModel
 import com.proj.smart_feeder.feature_profiles.data.impl.DummyProfilesRepository
 import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
 import com.proj.smart_feeder.feature_profiles.ui.ProfilesViewModel
-import com.proj.smart_feeder.feature_feeder.data.network.FeederApi
 
 val appModule = module {
     single<FeederRepository> { NetworkFeederRepository(get(), get()) }
