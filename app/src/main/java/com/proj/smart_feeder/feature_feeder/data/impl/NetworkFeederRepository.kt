@@ -1,25 +1,66 @@
 package com.proj.smart_feeder.feature_feeder.data.impl
 
+import com.proj.smart_feeder.core.cache.DataStoreManager
 import com.proj.smart_feeder.feature_feeder.data.network.FeederApi
 import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
 import com.proj.smart_feeder.feature_feeder.ui.FeederState
+import kotlinx.coroutines.flow.*
+import kotlinx.serialization.json.Json
+import com.proj.smart_feeder.feature_feeder.data.network.FeederStateResponse
 
 class NetworkFeederRepository(
-    private val api: FeederApi
+    private val api: FeederApi,
+    private val cache: DataStoreManager
 ) : FeederRepository {
 
-    override suspend fun getFeederState(): FeederState {
-        val response = api.getFeederState()
+    private val json = Json { ignoreUnknownKeys = true }
 
-        return FeederState(
-            isLoading = false,
-            currentFoodGrams = response.foodLevelGrams,
-            lastSeenTimestamp = response.lastConnection,
-            errorMessage = null
-        )
+    override fun getFeederState(): Flow<FeederState> {
+        val cacheFlow = cache.getFromCache(DataStoreManager.FEEDER_STATE_KEY).map { jsonString ->
+            if (jsonString != null) {
+                try {
+                    val response = json.decodeFromString<FeederStateResponse>(jsonString)
+                    FeederState(
+                        isLoading = false,
+                        currentFoodGrams = response.foodLevelGrams,
+                        lastSeenTimestamp = response.lastConnection,
+                        errorMessage = null
+                    )
+                } catch (e: Exception) {
+                    null
+                }
+            } else {
+                null
+            }
+        }
+
+        return flow {
+            val initialCache = cacheFlow.firstOrNull()
+            if (initialCache != null) {
+                emit(initialCache)
+            } else {
+                emit(FeederState(isLoading = true))
+            }
+
+            try {
+                val response = api.getFeederState()
+                cache.saveToCache(DataStoreManager.FEEDER_STATE_KEY, json.encodeToString(response))
+            } catch (e: Exception) {
+                if (initialCache == null) {
+                    emit(FeederState(isLoading = false, errorMessage = "Ошибка сети и отсутствие данных в кэше"))
+                }
+            }
+
+            emitAll(cacheFlow.filterNotNull())
+        }.distinctUntilChanged()
     }
 
-    override suspend fun getRecentFeedings(): List<String> {
-        TODO("Implement")
+    override fun getRecentFeedings(): Flow<List<String>> = flow {
+        try {
+            val history = api.getRecentFeedings()
+            emit(history)
+        } catch (e: Exception) {
+            emit(emptyList())
+        }
     }
 }

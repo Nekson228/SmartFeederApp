@@ -8,6 +8,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+
 class FeederViewModel(private val repository: FeederRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FeederState())
@@ -18,26 +22,13 @@ class FeederViewModel(private val repository: FeederRepository) : ViewModel() {
     }
 
     private fun loadData() {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-
-            try {
-                val feederData = repository.getFeederState()
-                val feedings = repository.getRecentFeedings()
-
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    currentFoodGrams = feederData.currentFoodGrams,
-                    maxFoodCapacityGrams = feederData.maxFoodCapacityGrams,
-                    lastSeenTimestamp = feederData.lastSeenTimestamp,
-                    recentFeedings = feedings
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = e.toString()
-                )
-            }
-        }
+        combine(
+            repository.getFeederState(),
+            repository.getRecentFeedings()
+        ) { feederState, feedings ->
+            _uiState.value = feederState.copy(
+                recentFeedings = feedings
+            )
+        }.launchIn(viewModelScope)
     }
 }

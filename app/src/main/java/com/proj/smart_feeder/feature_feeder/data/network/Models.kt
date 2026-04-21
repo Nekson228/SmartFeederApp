@@ -2,7 +2,7 @@ package com.proj.smart_feeder.feature_feeder.data.network
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.time.Instant
+import kotlinx.datetime.Instant
 
 @Serializable
 data class FeederStateResponse(
