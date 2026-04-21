@@ -1,6 +1,6 @@
 package com.proj.smart_feeder.di
 
-import com.proj.smart_feeder.feature_feeder.data.impl.DummyFeederRepository
+import com.proj.smart_feeder.feature_feeder.data.impl.NetworkFeederRepository
 import org.koin.dsl.module
 import org.koin.core.module.dsl.*
 import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
@@ -11,9 +11,10 @@ import com.proj.smart_feeder.feature_settings.ui.SettingsViewModel
 import com.proj.smart_feeder.feature_profiles.data.impl.DummyProfilesRepository
 import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
 import com.proj.smart_feeder.feature_profiles.ui.ProfilesViewModel
+import com.proj.smart_feeder.feature_feeder.data.network.FeederApi
 
 val appModule = module {
-    single<FeederRepository> { DummyFeederRepository() }
+    single<FeederRepository> { NetworkFeederRepository(get(), get()) }
     single<ProfilesRepository> { DummyProfilesRepository() }
     single<SettingsRepository> { DummySettingsRepository() }
     viewModelOf(::FeederViewModel)

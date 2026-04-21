@@ -19,24 +19,14 @@ class FeederViewModel(private val repository: FeederRepository) : ViewModel() {
 
     private fun loadData() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-
-            try {
-                val feederData = repository.getFeederState()
-                val feedings = repository.getRecentFeedings()
-
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    currentFoodGrams = feederData.currentFoodGrams,
-                    maxFoodCapacityGrams = feederData.maxFoodCapacityGrams,
-                    lastSeenTimestamp = feederData.lastSeenTimestamp,
-                    recentFeedings = feedings
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = e.toString()
-                )
+            repository.getFeederState().collect { feederState ->
+                _uiState.value = feederState
+            }
+        }
+        
+        viewModelScope.launch {
+            repository.getRecentFeedings().collect { feedings ->
+                _uiState.value = _uiState.value.copy(recentFeedings = feedings)
             }
         }
     }
