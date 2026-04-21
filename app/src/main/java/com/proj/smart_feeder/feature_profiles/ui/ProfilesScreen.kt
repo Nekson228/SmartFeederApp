@@ -285,7 +285,7 @@ fun PetProfileContent(
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Объем за последние 7 дней (среднее: 320г/день)",
+                    "Объем за последние 7 дней",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.secondary
                 )
