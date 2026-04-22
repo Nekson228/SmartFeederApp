@@ -7,7 +7,7 @@ import kotlinx.datetime.Instant
 @Serializable
 data class FeederStateResponse(
     @SerialName("current_food_weight")
-    val foodLevelGrams: Int,
+    val foodLevelGrams: Float,
 
     @SerialName("last_connection")
     val lastConnection: Instant

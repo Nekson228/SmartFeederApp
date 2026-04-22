@@ -4,8 +4,8 @@ import kotlinx.datetime.Instant
 
 data class FeederState(
     val isLoading: Boolean = true,
-    val currentFoodGrams: Int = 0,
-    val maxFoodCapacityGrams: Int = 1000,
+    val currentFoodGrams: Float = 0f,
+    val maxFoodCapacityGrams: Float = 1000f,
     val lastSeenTimestamp: Instant? = null,
     val recentFeedings: List<String> = emptyList(),
     val errorMessage: String? = null

@@ -4,7 +4,7 @@ import retrofit2.http.GET
 
 interface FeederApi {
 
-    @GET("external/status")
+    @GET("status")
     suspend fun getFeederState(): FeederStateResponse
 
     @GET("api/v1/feeder/history") 

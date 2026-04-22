@@ -55,7 +55,7 @@ fun FeederScreen(viewModel: FeederViewModel = koinViewModel()) {
                     )
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    val progressRatio = state.currentFoodGrams.toFloat() / state.maxFoodCapacityGrams.toFloat()
+                    val progressRatio = state.currentFoodGrams / state.maxFoodCapacityGrams
                     LinearProgressIndicator(
                         progress = { progressRatio },
                         modifier = Modifier.fillMaxWidth().height(8.dp).clip(CircleShape),

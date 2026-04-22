@@ -11,8 +11,8 @@ class DummyFeederRepository : FeederRepository {
         emit(
             FeederState(
                 isLoading = false,
-                currentFoodGrams = 800,
-                maxFoodCapacityGrams = 1000,
+                currentFoodGrams = 800f,
+                maxFoodCapacityGrams = 1000f,
                 lastSeenTimestamp = Clock.System.now()
             )
         )
