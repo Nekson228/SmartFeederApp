@@ -76,7 +76,8 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
 
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    beyondViewportPageCount = 1
                 ) { page ->
                     val currentProfile = state.profiles[page]
                     PetProfileContent(
@@ -100,7 +101,7 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
 
     if (showStatsBottomSheet && selectedProfileForStats != null) {
         ModalBottomSheet(
-            onDismissRequest = { showStatsBottomSheet = false },
+            onDismissRequest = { },
             sheetState = sheetState,
             containerColor = MaterialTheme.colorScheme.surface,
             dragHandle = { BottomSheetDefaults.DragHandle() }
@@ -151,24 +152,20 @@ fun PetStatisticsDetail(profile: PetProfile) {
         Text("История кормлений", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(8.dp))
 
-        val dummyHistory = listOf(
-            "Сегодня, 08:30 — 60г",
-            "Вчера, 20:15 — 55г",
-            "Вчера, 12:00 — 60г",
-            "Вчера, 08:00 — 50г",
-            "20 окт, 19:40 — 70г",
-            "20 окт, 11:30 — 60г",
-            "19 окт, 20:00 — 55г"
-        )
-
         Column(Modifier.verticalScroll(rememberScrollState())) {
-            dummyHistory.forEach { entry ->
+            if (profile.feedingHistory.isEmpty()) {
                 ListItem(
-                    headlineContent = { Text(entry) },
-                    leadingContent = { Icon(Icons.Default.History, null, tint = MaterialTheme.colorScheme.primary) },
-                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    headlineContent = { Text("История пуста", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary) }
                 )
-                HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+            } else {
+                profile.feedingHistory.forEach { entry ->
+                    ListItem(
+                        headlineContent = { Text(entry) },
+                        leadingContent = { Icon(Icons.Default.History, null, tint = MaterialTheme.colorScheme.primary) },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    )
+                    HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                }
             }
             Spacer(Modifier.height(32.dp))
         }
@@ -291,7 +288,7 @@ fun PetProfileContent(
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Объем за последние 7 дней (среднее: 320г/день)",
+                    "Объем за последние 7 дней",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.secondary
                 )

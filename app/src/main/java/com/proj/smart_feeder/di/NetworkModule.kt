@@ -3,6 +3,7 @@ package com.proj.smart_feeder.di
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.proj.smart_feeder.core.network.NetworkConstants
 import com.proj.smart_feeder.feature_feeder.data.network.FeederApi
+import com.proj.smart_feeder.feature_profiles.data.network.ProfilesApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -39,4 +40,5 @@ val networkModule = module {
     }
 
     single { get<Retrofit>().create(FeederApi::class.java) }
+    single { get<Retrofit>().create(ProfilesApi::class.java) }
 }
