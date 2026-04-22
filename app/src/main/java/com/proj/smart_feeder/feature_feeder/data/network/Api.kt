@@ -9,9 +9,6 @@ interface FeederApi {
 
     @GET("api/v1/feeder/history") 
     suspend fun getRecentFeedings(): List<String>
-
-    @retrofit2.http.POST("api/v1/feeder/feed")
-    suspend fun feedNow(): retrofit2.Response<Unit>
 }
 
 

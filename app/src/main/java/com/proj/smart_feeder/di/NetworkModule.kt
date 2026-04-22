@@ -1,6 +1,7 @@
 package com.proj.smart_feeder.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.proj.smart_feeder.core.network.NetworkConstants
 import com.proj.smart_feeder.feature_feeder.data.network.FeederApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -31,7 +32,7 @@ val networkModule = module {
         val json: Json = get()
         val client: OkHttpClient = get()
         Retrofit.Builder()
-            .baseUrl("https:
+            .baseUrl(NetworkConstants.BASE_URL)
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
@@ -39,4 +40,3 @@ val networkModule = module {
 
     single { get<Retrofit>().create(FeederApi::class.java) }
 }
-

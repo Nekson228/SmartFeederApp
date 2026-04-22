@@ -63,19 +63,6 @@ class NetworkFeederRepository(
             emit(emptyList())
         }
     }
-
-    override suspend fun feedNow(): Result<Unit> {
-        return try {
-            val response = api.feedNow()
-            if (response.isSuccessful) {
-                Result.success(Unit)
-            } else {
-                Result.failure(Exception("Ошибка сервера: ${response.code()}"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
 }
 
 
