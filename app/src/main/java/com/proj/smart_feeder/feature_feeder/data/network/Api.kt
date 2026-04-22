@@ -7,6 +7,8 @@ interface FeederApi {
     @GET("external/status")
     suspend fun getFeederState(): FeederStateResponse
 
-    @GET("api/v1/feeder/history") // TODO: Change to real endpoint
+    @GET("api/v1/feeder/history") 
     suspend fun getRecentFeedings(): List<String>
 }
+
+

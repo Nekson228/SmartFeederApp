@@ -107,3 +107,4 @@ fun SettingsItem(title: String, trailing: @Composable () -> Unit) {
         trailing()
     }
 }
+

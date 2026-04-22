@@ -8,3 +8,4 @@ data class SettingsState(
     val cacheSizeMb: Int = 124,
     val isLoading: Boolean = false
 )
+

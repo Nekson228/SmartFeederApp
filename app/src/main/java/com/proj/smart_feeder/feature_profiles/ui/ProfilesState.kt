@@ -7,3 +7,4 @@ data class ProfilesState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )
+

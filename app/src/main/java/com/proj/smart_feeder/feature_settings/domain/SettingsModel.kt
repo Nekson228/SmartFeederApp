@@ -12,3 +12,4 @@ data class AppSettings(
     val notifications: List<NotificationSetting> = emptyList(),
     val cacheSizeMb: Int = 124
 )
+

@@ -1,5 +1,8 @@
 package com.proj.smart_feeder.feature_profiles.domain
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class PetProfile(
     val id: String,
     val name: String,

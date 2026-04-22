@@ -9,3 +9,4 @@ interface SettingsRepository {
     suspend fun toggleNotification(id: String, enabled: Boolean)
     suspend fun clearCache()
 }
+

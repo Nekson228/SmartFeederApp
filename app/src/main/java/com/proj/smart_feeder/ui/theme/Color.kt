@@ -18,3 +18,4 @@ val LatteLavender = Color(0xFF7287FD)
 val LatteMauve = Color(0xFF8839EF)
 val LatteRed = Color(0xFFD20F39)
 val LatteGreen = Color(0xFF40A02B)
+

@@ -1,6 +1,7 @@
 package com.proj.smart_feeder.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.proj.smart_feeder.core.network.NetworkConstants
 import com.proj.smart_feeder.feature_feeder.data.network.FeederApi
 import com.proj.smart_feeder.feature_profiles.data.network.ProfilesApi
 import kotlinx.serialization.json.Json
@@ -32,7 +33,7 @@ val networkModule = module {
         val json: Json = get()
         val client: OkHttpClient = get()
         Retrofit.Builder()
-            .baseUrl("https://api.example.com/") // TODO: заменить на реальный url
+            .baseUrl(NetworkConstants.BASE_URL)
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
