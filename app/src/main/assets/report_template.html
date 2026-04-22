@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Цветовая палитра Catppuccin Latte */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #4c4f69; /* Text */
+            background-color: #eff1f5; /* Base */
+            margin: 0;
+            padding: 30px;
+        }
+        .header {
+            background-color: #1e66f5; /* Sapphire */
+            color: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(30, 102, 245, 0.2);
+        }
+        .header h1 { margin: 0; font-size: 28px; font-weight: bold; }
+        .header p { margin: 8px 0 0 0; font-size: 14px; opacity: 0.9; }
+
+        .card {
+            background-color: #ffffff; /* Surface */
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            border-left: 6px solid #1e66f5; /* Акцентная полоса */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .profile-grid {
+            display: flex;
+            justify-content: space-between;
+        }
+        .profile-item {
+            flex: 1;
+        }
+
+        .section-title {
+            font-weight: 800;
+            color: #7287fd; /* Lavender */
+            display: block;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+        .label {
+            color: #8c8fa1; /* Overlay0 */
+            font-size: 12px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .chart-container {
+            text-align: center;
+            padding: 10px 0;
+        }
+        .chart-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+        th {
+            text-align: left;
+            background-color: #e6e9ef; /* Mantle */
+            padding: 12px 16px;
+            color: #4c4f69;
+            font-size: 14px;
+            border-radius: 8px 8px 0 0; /* Закругление шапки */
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #ccd0da; /* Surface0 */
+            font-size: 14px;
+        }
+        /* Убираем рамку у последней строки */
+        tr:last-child td { border-bottom: none; }
+    </style>
+    <title></title>
+</head>
+<body>
+<div class="header">
+    <h1>Отчет о питании: {{pet_name}}</h1>
+    <p>Сгенерировано приложением Smart Feeder</p>
+</div>
+
+<div class="card">
+    <span class="section-title">Информация о питомце</span>
+    <div class="profile-grid">
+        <div class="profile-item">
+            <span class="label">Порода</span>
+            <span class="value">{{pet_breed}}</span>
+        </div>
+        <div class="profile-item">
+            <span class="label">Возраст</span>
+            <span class="value">{{pet_age}}</span>
+        </div>
+        <div class="profile-item">
+            <span class="label">Вес</span>
+            <span class="value">{{pet_weight}}</span>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <span class="section-title">Аналитика потребления</span>
+    <div class="chart-container">
+        {{chart_html}}
+    </div>
+</div>
+
+<div class="card">
+    <span class="section-title">История последних кормлений</span>
+    <table>
+        <thead>
+        <tr>
+            <th>Дата и время</th>
+            <th>Объем порции</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{history_rows}}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -23,10 +23,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.platform.LocalContext
 import coil3.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.delay
 import com.proj.smart_feeder.feature_profiles.domain.PetProfile
+import com.proj.smart_feeder.feature_reports.ChartGenerator
+import com.proj.smart_feeder.feature_reports.HtmlReportBuilder
+import com.proj.smart_feeder.feature_reports.presentation.ReportPrinter
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -184,17 +190,33 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
 
 @Composable
 fun PetStatisticsDetail(profile: PetProfile) {
+    val context = LocalContext.current
+    val reportPrinter = koinInject<ReportPrinter> { parametersOf(context) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.9f)
             .padding(16.dp)
     ) {
-        Text(
-            text = "Статистика: ${profile.name}",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Статистика: ${profile.name}",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+            IconButton(onClick = {
+                val chartBase64 = ChartGenerator.generateFeedingChartBase64(profile.feedingStats)
+                val html = HtmlReportBuilder.build(context, profile, chartBase64)
+                reportPrinter.print(html, "Отчет_${profile.name}")
+            }) {
+                Icon(Icons.Default.Print, contentDescription = "Печать отчета")
+            }
+        }
         Spacer(Modifier.height(16.dp))
 
         Card(
@@ -262,7 +284,7 @@ fun PetProfileContent(
             breed != profile.breed ||
             age != profile.age ||
             weight != profile.weight ||
-            photoUri != profile.photoUri
+            photoUri != currentPhotoUri
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()

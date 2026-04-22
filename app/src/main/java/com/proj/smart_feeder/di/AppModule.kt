@@ -1,5 +1,6 @@
 package com.proj.smart_feeder.di
 
+import android.content.Context
 import com.proj.smart_feeder.core.cache.DataStoreManager
 import com.proj.smart_feeder.feature_feeder.data.impl.NetworkFeederRepository
 import org.koin.dsl.module
@@ -12,6 +13,8 @@ import com.proj.smart_feeder.feature_settings.data.repository.SettingsRepository
 import com.proj.smart_feeder.feature_settings.ui.SettingsViewModel
 import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
 import com.proj.smart_feeder.feature_profiles.ui.ProfilesViewModel
+import com.proj.smart_feeder.feature_reports.presentation.ReportPrinter
+import org.koin.android.ext.koin.androidContext
 
 val appModule = module {
     single { DataStoreManager(get()) }
@@ -19,8 +22,10 @@ val appModule = module {
     single<ProfilesRepository> { DataStoreProfilesRepository(get()) }
     single<SettingsRepository> { DummySettingsRepository() }
 
+    factory { (context: Context) -> ReportPrinter(context) }
+
     viewModelOf(::FeederViewModel)
-    viewModelOf(::ProfilesViewModel)
+    viewModel { ProfilesViewModel(get(), get()) }
     viewModelOf(::SettingsViewModel)
 }
 

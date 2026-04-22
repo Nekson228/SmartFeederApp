@@ -1,21 +1,27 @@
 package com.proj.smart_feeder.feature_profiles.ui
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.proj.smart_feeder.core.cache.DataStoreManager
 import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
+import com.proj.smart_feeder.feature_profiles.domain.PetProfile
+import com.proj.smart_feeder.feature_reports.ChartGenerator
+import com.proj.smart_feeder.feature_reports.HtmlReportBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onStart
 
 class ProfilesViewModel(
     private val repository: ProfilesRepository,
@@ -35,11 +41,11 @@ class ProfilesViewModel(
                 .onStart { _uiState.update { it.copy(isLoading = true) } }
                 .flatMapLatest { profiles ->
                     if (profiles.isEmpty()) return@flatMapLatest flowOf(profiles to emptyMap<String, String?>())
-                    
+
                     val photoFlows = profiles.map { profile ->
                         dataStoreManager.getPetPhoto(profile.id).map { profile.id to it }
                     }
-                    
+
                     combine(photoFlows) { photos ->
                         profiles to photos.toMap()
                     }
@@ -56,7 +62,14 @@ class ProfilesViewModel(
         }
     }
 
-    fun updateProfile(id: String, name: String, breed: String, age: String, weight: String, photoUri: String?) {
+    fun updateProfile(
+        id: String,
+        name: String,
+        breed: String,
+        age: String,
+        weight: String,
+        photoUri: String?
+    ) {
         viewModelScope.launch {
             if (photoUri != null && photoUri.startsWith("content://")) {
                 dataStoreManager.savePetPhoto(id, photoUri)
@@ -81,5 +94,3 @@ class ProfilesViewModel(
         }
     }
 }
-
-

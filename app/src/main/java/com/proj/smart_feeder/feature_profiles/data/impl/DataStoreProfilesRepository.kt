@@ -59,8 +59,31 @@ class DataStoreProfilesRepository(
     }
 
     private fun getDefaultProfiles() = listOf(
-        PetProfile(id = "1", name = "Барсик", breed = "Британская", age = "3 года", weight = "5.4 кг"),
-        PetProfile(id = "2", name = "Мурка", breed = "Сиамская", age = "2 года", weight = "4.1 кг")
+        PetProfile(
+            id = "1",
+            name = "Барсик",
+            breed = "Британская",
+            age = "3 года",
+            weight = "5.4 кг",
+            feedingStats = listOf(0.4f, 0.8f, 0.6f, 1f, 0.7f, 0.9f, 0.5f),
+            feedingHistory = listOf(
+                "Сегодня, 08:30 - 60г",
+                "Вчера, 20:15 - 55г",
+                "Вчера, 12:00 - 60г"
+            )
+        ),
+        PetProfile(
+            id = "2",
+            name = "Мурка",
+            breed = "Сиамская",
+            age = "2 года",
+            weight = "4.1 кг",
+            feedingStats = listOf(0.6f, 0.4f, 0.9f, 0.5f, 0.8f, 0.3f, 1f),
+            feedingHistory = listOf(
+                "Сегодня, 09:00 - 40г",
+                "Вчера, 21:00 - 45г"
+            )
+        ),
     )
 }
 
