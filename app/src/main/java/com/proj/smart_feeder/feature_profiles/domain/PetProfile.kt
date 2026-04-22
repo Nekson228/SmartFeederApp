@@ -9,7 +9,6 @@ data class PetProfile(
     val breed: String,
     val age: String,
     val weight: String,
-    val photoUri: String? = null,
     val feedingStats: List<Float> = emptyList(),
     val feedingHistory: List<String> = emptyList()
 )

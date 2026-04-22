@@ -80,8 +80,10 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
                     beyondViewportPageCount = 1
                 ) { page ->
                     val currentProfile = state.profiles[page]
+                    val currentPhoto = state.photos[currentProfile.id]
                     PetProfileContent(
                         profile = currentProfile,
+                        currentPhotoUri = currentPhoto,
                         onSave = { name, breed, age, weight, photoUri ->
                             viewModel.updateProfile(currentProfile.id, name, breed, age, weight, photoUri)
                         },
@@ -175,6 +177,7 @@ fun PetStatisticsDetail(profile: PetProfile) {
 @Composable
 fun PetProfileContent(
     profile: PetProfile,
+    currentPhotoUri: String?,
     onSave: (String, String, String, String, String?) -> Unit,
     onStatsClick: () -> Unit
 ) {
@@ -182,7 +185,7 @@ fun PetProfileContent(
     var breed by remember(profile.id) { mutableStateOf(profile.breed) }
     var age by remember(profile.id) { mutableStateOf(profile.age) }
     var weight by remember(profile.id) { mutableStateOf(profile.weight) }
-    var photoUri by remember(profile.id) { mutableStateOf(profile.photoUri) }
+    var photoUri by remember(profile.id, currentPhotoUri) { mutableStateOf(currentPhotoUri) }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()

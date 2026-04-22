@@ -18,6 +18,22 @@ class DataStoreManager(private val context: Context) {
         val FEEDER_STATE_KEY = stringPreferencesKey("feeder_state")
         val PROFILES_KEY = stringPreferencesKey("profiles")
         val SETTINGS_KEY = stringPreferencesKey("settings")
+        fun getPetPhotoKey(petId: String) = stringPreferencesKey("pet_photo_$petId")
+    }
+
+    suspend fun savePetPhoto(petId: String, uriString: String) {
+        val permanentUri = saveImageToInternalStorage(uriString)
+        if (permanentUri != null) {
+            context.dataStore.edit { preferences ->
+                preferences[getPetPhotoKey(petId)] = permanentUri
+            }
+        }
+    }
+
+    fun getPetPhoto(petId: String): Flow<String?> {
+        return context.dataStore.data.map { preferences ->
+            preferences[getPetPhotoKey(petId)]
+        }
     }
 
     suspend fun saveToCache(key: androidx.datastore.preferences.core.Preferences.Key<String>, json: String) {
