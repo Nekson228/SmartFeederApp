@@ -20,7 +20,6 @@ class NetworkProfilesRepository(
                     breed = dto.breed,
                     age = dto.age,
                     weight = dto.weight,
-                    photoUri = dto.photoUri,
                     feedingStats = dto.feedingStats,
                     feedingHistory = dto.feedingHistory
                 )

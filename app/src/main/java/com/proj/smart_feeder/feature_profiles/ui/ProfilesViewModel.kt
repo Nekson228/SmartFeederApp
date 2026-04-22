@@ -10,6 +10,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 
 class ProfilesViewModel(
     private val repository: ProfilesRepository,
@@ -22,14 +28,27 @@ class ProfilesViewModel(
         observeProfiles()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeProfiles() {
         viewModelScope.launch {
             repository.getProfiles()
                 .onStart { _uiState.update { it.copy(isLoading = true) } }
-                .collect { profiles ->
+                .flatMapLatest { profiles ->
+                    if (profiles.isEmpty()) return@flatMapLatest flowOf(profiles to emptyMap<String, String?>())
+                    
+                    val photoFlows = profiles.map { profile ->
+                        dataStoreManager.getPetPhoto(profile.id).map { profile.id to it }
+                    }
+                    
+                    combine(photoFlows) { photos ->
+                        profiles to photos.toMap()
+                    }
+                }
+                .collect { (profiles, photos) ->
                     _uiState.update {
                         it.copy(
                             profiles = profiles,
+                            photos = photos,
                             isLoading = false
                         )
                     }
@@ -39,8 +58,9 @@ class ProfilesViewModel(
 
     fun updateProfile(id: String, name: String, breed: String, age: String, weight: String, photoUri: String?) {
         viewModelScope.launch {
-            
-            val permanentPhotoUri = if (photoUri != null && photoUri.startsWith("content://")) dataStoreManager.saveImageToInternalStorage(photoUri) else photoUri
+            if (photoUri != null && photoUri.startsWith("content://")) {
+                dataStoreManager.savePetPhoto(id, photoUri)
+            }
 
             val currentProfile = _uiState.value.profiles.find { it.id == id }
             if (currentProfile != null) {
@@ -48,8 +68,7 @@ class ProfilesViewModel(
                     name = name,
                     breed = breed,
                     age = age,
-                    weight = weight,
-                    photoUri = permanentPhotoUri
+                    weight = weight
                 )
                 repository.updateProfile(updated)
             }
