@@ -27,6 +27,10 @@ class DummyFeederRepository : FeederRepository {
             )
         )
     }
+
+    override suspend fun addSchedule(startTimeSeconds: Int, endTimeSeconds: Int) {
+        // Dummy implementation
+    }
 }
 
 

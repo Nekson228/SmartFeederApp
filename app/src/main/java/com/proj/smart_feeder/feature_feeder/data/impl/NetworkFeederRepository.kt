@@ -63,6 +63,16 @@ class NetworkFeederRepository(
             emit(emptyList())
         }
     }
+
+    override suspend fun addSchedule(startTimeSeconds: Int, endTimeSeconds: Int) {
+        val userId = "3fa85f64-5717-4562-b3fc-2c963f66afa6" // TODO Replace with actual user ID
+        val request = com.proj.smart_feeder.feature_feeder.data.network.ScheduleRequest(
+            userId = userId,
+            startTime = startTimeSeconds,
+            endTime = endTimeSeconds
+        )
+        api.addSchedule(request)
+    }
 }
 
 

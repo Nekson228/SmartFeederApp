@@ -132,7 +132,7 @@ fun FeederScreen(viewModel: FeederViewModel = koinViewModel()) {
         ) {
             AddScheduleSheetContent(
                 onAdd = { start, end ->
-                    // TODO: Implement schedule adding in ViewModel
+                    viewModel.addSchedule(start, end)
                     showSheet = false
                 },
                 onCancel = { showSheet = false }
@@ -154,7 +154,8 @@ fun AddScheduleSheetContent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(24.dp)
-            .navigationBarsPadding(),
+            .navigationBarsPadding()
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
