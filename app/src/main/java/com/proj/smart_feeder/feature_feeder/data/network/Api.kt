@@ -18,7 +18,7 @@ interface FeederApi {
     suspend fun addSchedule(@Body request: ScheduleRequest)
 
     @GET("schedules/{user_id}")
-    suspend fun getSchedules(@Path("user_id") userId: String): List<FeedingSchedule>
+    suspend fun getSchedules(@Path("user_id") userId: String): SchedulesResponse
 }
 
 

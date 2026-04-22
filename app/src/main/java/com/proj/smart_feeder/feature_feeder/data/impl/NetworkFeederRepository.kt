@@ -5,6 +5,7 @@ import com.proj.smart_feeder.feature_feeder.data.network.FeederApi
 import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
 import com.proj.smart_feeder.feature_feeder.domain.FeedingSchedule
 import com.proj.smart_feeder.feature_feeder.ui.FeederState
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
 import com.proj.smart_feeder.feature_feeder.data.network.FeederStateResponse
@@ -15,6 +16,7 @@ class NetworkFeederRepository(
 ) : FeederRepository {
 
     private val json = Json { ignoreUnknownKeys = true }
+    private val refreshSignal = MutableSharedFlow<Unit>(replay = 1).apply { tryEmit(Unit) }
 
     override fun getFeederState(): Flow<FeederState> {
         val cacheFlow = cache.getFromCache(DataStoreManager.FEEDER_STATE_KEY).map { jsonString ->
@@ -65,12 +67,27 @@ class NetworkFeederRepository(
         }
     }
 
-    override fun getSchedules(): Flow<List<FeedingSchedule>> = flow {
-        try {
-            val schedules = api.getSchedules("3fa85f64-5717-4562-b3fc-2c963f66afa6")
-            emit(schedules)
-        } catch (e: Exception) {
-            emit(emptyList())
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getSchedules(): Flow<List<FeedingSchedule>> = refreshSignal.flatMapLatest {
+        flow {
+            try {
+                val userId = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                val response = api.getSchedules(userId)
+
+                // Преобразуем [[480, 720], ...] в List<FeedingSchedule>
+                val domainSchedules = response.schedules.map { pair ->
+                    FeedingSchedule(
+                        userId = userId,
+                        startTimeSeconds = pair[0],
+                        endTimeSeconds = pair[1],
+                        isEnabled = true
+                    )
+                }
+                emit(domainSchedules)
+            } catch (e: Exception) {
+                e.printStackTrace() // Добавьте это, чтобы видеть ошибки в Logcat!
+                emit(emptyList())
+            }
         }
     }
 
@@ -82,6 +99,7 @@ class NetworkFeederRepository(
             endTime = endTimeSeconds
         )
         api.addSchedule(request)
+        refreshSignal.emit(Unit)
     }
 }
 

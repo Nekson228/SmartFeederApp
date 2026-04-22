@@ -23,4 +23,9 @@ data class ScheduleRequest(
     val endTime: Int
 )
 
+@Serializable
+data class SchedulesResponse(
+    @SerialName("schedules")
+    val schedules: List<List<Int>>
+)
 
