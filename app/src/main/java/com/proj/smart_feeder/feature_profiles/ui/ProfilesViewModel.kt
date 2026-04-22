@@ -40,11 +40,7 @@ class ProfilesViewModel(
     fun updateProfile(id: String, name: String, breed: String, age: String, weight: String, photoUri: String?) {
         viewModelScope.launch {
             
-            val permanentPhotoUri = if (photoUri != null && photoUri.startsWith("content:
-                dataStoreManager.saveImageToInternalStorage(photoUri)
-            } else {
-                photoUri
-            }
+            val permanentPhotoUri = if (photoUri != null && photoUri.startsWith("content:")) dataStoreManager.saveImageToInternalStorage(photoUri) else photoUri
 
             val currentProfile = _uiState.value.profiles.find { it.id == id }
             if (currentProfile != null) {
