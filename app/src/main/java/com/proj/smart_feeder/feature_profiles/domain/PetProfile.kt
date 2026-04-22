@@ -1,5 +1,4 @@
 package com.proj.smart_feeder.feature_profiles.domain
-
 import kotlinx.serialization.Serializable
 
 @Serializable

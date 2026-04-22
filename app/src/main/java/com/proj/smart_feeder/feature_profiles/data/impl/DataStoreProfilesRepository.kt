@@ -48,6 +48,16 @@ class DataStoreProfilesRepository(
         dataStoreManager.saveToCache(DataStoreManager.PROFILES_KEY, json.encodeToString(profileListSerializer, newList))
     }
 
+    override suspend fun deleteProfile(profileId: String) {
+        val currentJson = dataStoreManager.getFromCache(DataStoreManager.PROFILES_KEY).firstOrNull()
+        val currentList = currentJson?.let {
+            try { json.decodeFromString(profileListSerializer, it) } catch (e: Exception) { emptyList() }
+        } ?: getDefaultProfiles()
+
+        val newList = currentList.filterNot { it.id == profileId }
+        dataStoreManager.saveToCache(DataStoreManager.PROFILES_KEY, json.encodeToString(profileListSerializer, newList))
+    }
+
     private fun getDefaultProfiles() = listOf(
         PetProfile(id = "1", name = "Барсик", breed = "Британская", age = "3 года", weight = "5.4 кг"),
         PetProfile(id = "2", name = "Мурка", breed = "Сиамская", age = "2 года", weight = "4.1 кг")

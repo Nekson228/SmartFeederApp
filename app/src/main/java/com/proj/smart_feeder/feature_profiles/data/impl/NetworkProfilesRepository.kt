@@ -34,4 +34,8 @@ class NetworkProfilesRepository(
     override suspend fun updateProfile(updatedProfile: PetProfile) {
         // TODO: Реализовать обновление через API, когда появится соответствующий эндпоинт
     }
+
+    override suspend fun deleteProfile(profileId: String) {
+        // TODO: Реализовать удаление через API, когда появится соответствующий эндпоинт
+    }
 }

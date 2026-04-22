@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil3.compose.rememberAsyncImagePainter
 import com.proj.smart_feeder.feature_profiles.domain.PetProfile
 import org.koin.androidx.compose.koinViewModel
@@ -34,6 +36,8 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
     }
 
     var showStatsBottomSheet by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var fullScreenImageUrl by remember { mutableStateOf<String?>(null) }
     var selectedProfileForStats by remember { mutableStateOf<PetProfile?>(null) }
     val sheetState = rememberModalBottomSheetState()
 
@@ -46,13 +50,18 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
 
     Scaffold { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding).padding(top = 16.dp)) {
-            Text(
-                text = "Питомцы",
-                modifier = Modifier.padding(horizontal = 16.dp),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Питомцы",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
 
             if (state.profiles.isNotEmpty()) {
                 Row(
@@ -88,6 +97,12 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
                         onStatsClick = {
                             selectedProfileForStats = currentProfile
                             showStatsBottomSheet = true
+                        },
+                        onDeleteClick = {
+                            showDeleteDialog = true
+                        },
+                        onImageClick = { url ->
+                            fullScreenImageUrl = url
                         }
                     )
                 }
@@ -107,6 +122,59 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
             dragHandle = { BottomSheetDefaults.DragHandle() }
         ) {
             PetStatisticsDetail(profile = selectedProfileForStats!!)
+        }
+    }
+
+    if (showDeleteDialog && state.profiles.isNotEmpty()) {
+        val currentProfile = state.profiles[pagerState.currentPage]
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Удалить профиль") },
+            text = { Text("Вы уверены, что хотите удалить профиль питомца ${currentProfile.name}?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteProfile(currentProfile.id)
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Удалить")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Отмена")
+                }
+            }
+        )
+    }
+
+    if (fullScreenImageUrl != null) {
+        Dialog(
+            onDismissRequest = { fullScreenImageUrl = null },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+                    .clickable { fullScreenImageUrl = null },
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(fullScreenImageUrl),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
+                )
+                IconButton(
+                    onClick = { fullScreenImageUrl = null },
+                    modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)
+                ) {
+                    Icon(Icons.Default.Close, contentDescription = "Закрыть", tint = Color.White)
+                }
+            }
         }
     }
 }
@@ -176,7 +244,9 @@ fun PetStatisticsDetail(profile: PetProfile) {
 fun PetProfileContent(
     profile: PetProfile,
     onSave: (String, String, String, String, String?) -> Unit,
-    onStatsClick: () -> Unit
+    onStatsClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    onImageClick: (String) -> Unit
 ) {
     var name by remember(profile.id) { mutableStateOf(profile.name) }
     var breed by remember(profile.id) { mutableStateOf(profile.breed) }
@@ -198,68 +268,97 @@ fun PetProfileContent(
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
-            Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(
-                    modifier = Modifier
-                        .size(100.dp)
-                        .background(MaterialTheme.colorScheme.secondary, CircleShape)
-                        .clip(CircleShape)
-                        .clickable { imagePickerLauncher.launch("image/*") },
-                    contentAlignment = Alignment.Center
+            Box(modifier = Modifier.fillMaxWidth()) {
+                IconButton(
+                    onClick = onDeleteClick,
+                    modifier = Modifier.align(Alignment.TopEnd).padding(4.dp)
                 ) {
-                    if (photoUri != null) {
-                        Image(
-                            painter = rememberAsyncImagePainter(photoUri),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    } else {
-                        Icon(
-                            Icons.Default.Pets,
-                            null,
-                            modifier = Modifier.size(50.dp),
-                            tint = MaterialTheme.colorScheme.onSecondary
-                        )
-                    }
-
-                    Box(
-                        Modifier
-                            .align(Alignment.BottomEnd)
-                            .background(MaterialTheme.colorScheme.primary, CircleShape)
-                            .padding(4.dp)
-                    ) {
-                        Icon(Icons.Default.Edit, null, modifier = Modifier.size(16.dp), tint = Color.White)
-                    }
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Удалить профиль",
+                        tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+                    )
                 }
-                Spacer(modifier = Modifier.height(12.dp))
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Имя") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = breed,
-                    onValueChange = { breed = it },
-                    label = { Text("Порода") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Row(Modifier.fillMaxWidth()) {
+
+                Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(contentAlignment = Alignment.BottomEnd) {
+                        Box(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .background(MaterialTheme.colorScheme.secondary, CircleShape)
+                                .clip(CircleShape)
+                                .clickable {
+                                    if (photoUri != null) {
+                                        onImageClick(photoUri!!)
+                                    } else {
+                                        imagePickerLauncher.launch("image/*")
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (photoUri != null) {
+                                Image(
+                                    painter = rememberAsyncImagePainter(photoUri),
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Default.Pets,
+                                    null,
+                                    modifier = Modifier.size(50.dp),
+                                    tint = MaterialTheme.colorScheme.onSecondary
+                                )
+                            }
+                        }
+
+                        Surface(
+                            onClick = { imagePickerLauncher.launch("image/*") },
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(32.dp),
+                            shadowElevation = 2.dp
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.Edit,
+                                    contentDescription = "Изменить фото",
+                                    modifier = Modifier.size(16.dp),
+                                    tint = Color.White
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
-                        value = age,
-                        onValueChange = { age = it },
-                        label = { Text("Возраст") },
-                        modifier = Modifier.weight(1f)
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Имя") },
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = weight,
-                        onValueChange = { weight = it },
-                        label = { Text("Вес") },
-                        modifier = Modifier.weight(1f)
+                        value = breed,
+                        onValueChange = { breed = it },
+                        label = { Text("Порода") },
+                        modifier = Modifier.fillMaxWidth()
                     )
+                    Row(Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = age,
+                            onValueChange = { age = it },
+                            label = { Text("Возраст") },
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        OutlinedTextField(
+                            value = weight,
+                            onValueChange = { weight = it },
+                            label = { Text("Вес") },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
         }
@@ -330,4 +429,3 @@ fun PetProfileContent(
         Spacer(modifier = Modifier.height(100.dp))
     }
 }
-
