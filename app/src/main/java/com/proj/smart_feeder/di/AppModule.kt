@@ -19,6 +19,7 @@ import org.koin.android.ext.koin.androidContext
 val appModule = module {
     single { DataStoreManager(get()) }
     single<FeederRepository> { NetworkFeederRepository(get(), get()) }
+    // single<FeederRepository> { com.proj.smart_feeder.feature_feeder.data.impl.DummyFeederRepository() }
     single<ProfilesRepository> { DataStoreProfilesRepository(get()) }
     single<SettingsRepository> { DummySettingsRepository() }
 

@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalTime
 
 class FeederViewModel(private val repository: FeederRepository) : ViewModel() {
 
@@ -22,12 +24,37 @@ class FeederViewModel(private val repository: FeederRepository) : ViewModel() {
     private fun loadData() {
         combine(
             repository.getFeederState(),
-            repository.getRecentFeedings()
-        ) { feederState, feedings ->
-            feederState.copy(recentFeedings = feedings)
+            repository.getRecentFeedings(),
+            repository.getSchedules()
+        ) { feederState, feedings, schedules ->
+            feederState.copy(
+                recentFeedings = feedings,
+                schedules = schedules
+            )
         }.onEach { newState ->
             _uiState.value = newState
         }.launchIn(viewModelScope)
+    }
+
+    private var isAdding = false // Флаг состояния
+
+    fun addSchedule(startTime: LocalTime, endTime: LocalTime) {
+        if (isAdding) return // Если уже добавляем, игнорируем повторный вызов
+
+        viewModelScope.launch {
+            isAdding = true
+            try {
+                val startSeconds = startTime.hour * 3600 + startTime.minute * 60
+                val endSeconds = endTime.hour * 3600 + endTime.minute * 60
+
+                repository.addSchedule(startSeconds, endSeconds)
+                // Успех
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(errorMessage = "Ошибка при добавлении")
+            } finally {
+                isAdding = false // Сбрасываем флаг
+            }
+        }
     }
 }
 

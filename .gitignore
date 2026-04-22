@@ -36,3 +36,5 @@ replay_pid*
 .idea/shelf/
 .idea/caches/
 .idea/libraries/
+
+testSchedule.json

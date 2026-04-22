@@ -13,4 +13,19 @@ data class FeederStateResponse(
     val lastConnection: Instant
 )
 
+@Serializable
+data class ScheduleRequest(
+    @SerialName("user_id")
+    val userId: String,
+    @SerialName("start_time")
+    val startTime: Int,
+    @SerialName("end_time")
+    val endTime: Int
+)
+
+@Serializable
+data class SchedulesResponse(
+    @SerialName("schedules")
+    val schedules: List<List<Int>>
+)
 
