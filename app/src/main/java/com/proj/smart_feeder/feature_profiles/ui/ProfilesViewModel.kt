@@ -5,15 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.proj.smart_feeder.core.cache.DataStoreManager
 import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
-import com.proj.smart_feeder.feature_profiles.domain.PetProfile
-import com.proj.smart_feeder.feature_reports.ChartGenerator
-import com.proj.smart_feeder.feature_reports.HtmlReportBuilder
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest

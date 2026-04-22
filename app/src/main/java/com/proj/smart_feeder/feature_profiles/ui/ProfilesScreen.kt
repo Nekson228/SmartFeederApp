@@ -231,7 +231,7 @@ fun PetStatisticsDetail(profile: PetProfile) {
                 ) {
                     profile.feedingStats.forEach { h ->
                         Box(
-                            Modifier.width(35.dp).fillMaxHeight(h).background(
+                            Modifier.width(35.dp).fillMaxHeight(h / 100).background(
                                 MaterialTheme.colorScheme.primary,
                                 RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)
                             )
@@ -422,7 +422,7 @@ fun PetProfileContent(
                 ) {
                     profile.feedingStats.forEach { h ->
                         Box(
-                            Modifier.width(25.dp).fillMaxHeight(h).background(
+                            Modifier.width(25.dp).fillMaxHeight(h / 100).background(
                                 MaterialTheme.colorScheme.primary,
                                 RoundedCornerShape(4.dp)
                             )
