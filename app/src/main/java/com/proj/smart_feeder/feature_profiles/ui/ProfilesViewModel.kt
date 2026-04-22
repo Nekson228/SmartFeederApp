@@ -74,6 +74,12 @@ class ProfilesViewModel(
             }
         }
     }
+
+    fun deleteProfile(profileId: String) {
+        viewModelScope.launch {
+            repository.deleteProfile(profileId)
+        }
+    }
 }
 
 

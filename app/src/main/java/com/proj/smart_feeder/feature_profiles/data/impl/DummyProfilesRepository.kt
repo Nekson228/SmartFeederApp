@@ -56,4 +56,10 @@ class DummyProfilesRepository : ProfilesRepository {
             list.map { if (it.id == updatedProfile.id) updatedProfile else it }
         }
     }
+
+    override suspend fun deleteProfile(profileId: String) {
+        _profiles.update { list ->
+            list.filter { it.id != profileId }
+        }
+    }
 }

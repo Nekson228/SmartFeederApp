@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface ProfilesRepository {
     fun getProfiles(): Flow<List<PetProfile>>
     suspend fun updateProfile(updatedProfile: PetProfile)
+    suspend fun deleteProfile(profileId: String)
 }
 
