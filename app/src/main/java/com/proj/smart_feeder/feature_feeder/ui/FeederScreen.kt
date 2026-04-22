@@ -125,10 +125,6 @@ fun FeederScreen(viewModel: FeederViewModel = koinViewModel()) {
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                        Switch(
-                            checked = schedule.isEnabled,
-                            onCheckedChange = { /* TODO: Toggle schedule */ }
-                        )
                     }
                 }
             }

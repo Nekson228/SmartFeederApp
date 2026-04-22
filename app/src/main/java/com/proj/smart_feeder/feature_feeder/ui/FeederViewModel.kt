@@ -36,17 +36,23 @@ class FeederViewModel(private val repository: FeederRepository) : ViewModel() {
         }.launchIn(viewModelScope)
     }
 
+    private var isAdding = false // Флаг состояния
+
     fun addSchedule(startTime: LocalTime, endTime: LocalTime) {
+        if (isAdding) return // Если уже добавляем, игнорируем повторный вызов
+
         viewModelScope.launch {
+            isAdding = true
             try {
-                // Convert LocalTime to seconds of day as requested by "start_time": 0
                 val startSeconds = startTime.hour * 3600 + startTime.minute * 60
                 val endSeconds = endTime.hour * 3600 + endTime.minute * 60
-                
+
                 repository.addSchedule(startSeconds, endSeconds)
-                // Refresh data if needed or show success
+                // Успех
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessage = "Ошибка при добавлении расписания")
+                _uiState.value = _uiState.value.copy(errorMessage = "Ошибка при добавлении")
+            } finally {
+                isAdding = false // Сбрасываем флаг
             }
         }
     }
