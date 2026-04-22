@@ -8,3 +8,5 @@ interface FeederRepository {
     fun getRecentFeedings(): Flow<List<String>>
     suspend fun feedNow(): Result<Unit>
 }
+
+

@@ -10,3 +10,4 @@ data class FeederState(
     val recentFeedings: List<String> = emptyList(),
     val errorMessage: String? = null
 )
+

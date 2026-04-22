@@ -12,3 +12,5 @@ data class FeederStateResponse(
     @SerialName("last_connection")
     val lastConnection: Instant
 )
+
+

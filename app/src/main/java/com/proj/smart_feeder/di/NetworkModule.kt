@@ -31,7 +31,7 @@ val networkModule = module {
         val json: Json = get()
         val client: OkHttpClient = get()
         Retrofit.Builder()
-            .baseUrl("https://api.example.com/") // TODO: заменить на реальный url
+            .baseUrl("https:
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
@@ -39,3 +39,4 @@ val networkModule = module {
 
     single { get<Retrofit>().create(FeederApi::class.java) }
 }
+

@@ -23,3 +23,5 @@ val appModule = module {
     viewModelOf(::ProfilesViewModel)
     viewModelOf(::SettingsViewModel)
 }
+
+

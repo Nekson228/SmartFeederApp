@@ -7,3 +7,4 @@ interface ProfilesRepository {
     fun getProfiles(): Flow<List<PetProfile>>
     suspend fun updateProfile(updatedProfile: PetProfile)
 }
+

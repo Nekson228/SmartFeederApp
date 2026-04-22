@@ -45,3 +45,5 @@ class SmartFeederApp : Application(), SingletonImageLoader.Factory {
             .build()
     }
 }
+
+

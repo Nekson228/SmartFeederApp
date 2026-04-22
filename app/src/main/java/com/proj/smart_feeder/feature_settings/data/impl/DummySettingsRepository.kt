@@ -42,3 +42,4 @@ class DummySettingsRepository : SettingsRepository {
         _settings.update { it.copy(cacheSizeMb = 0) }
     }
 }
+

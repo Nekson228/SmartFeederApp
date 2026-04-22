@@ -32,10 +32,7 @@ class DataStoreManager(private val context: Context) {
         }
     }
 
-    /**
-     * Копирует изображение из внешнего URI во внутреннюю папку приложения.
-     * Это гарантирует, что фото не пропадет, если пользователь удалит его из галереи.
-     */
+    
     fun saveImageToInternalStorage(uriString: String): String? {
         return try {
             val uri = Uri.parse(uriString)
@@ -54,3 +51,4 @@ class DataStoreManager(private val context: Context) {
         }
     }
 }
+

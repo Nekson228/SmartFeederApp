@@ -39,8 +39,8 @@ class ProfilesViewModel(
 
     fun updateProfile(id: String, name: String, breed: String, age: String, weight: String, photoUri: String?) {
         viewModelScope.launch {
-            // Если пришел новый URI (из галереи), копируем его во внутреннюю память
-            val permanentPhotoUri = if (photoUri != null && photoUri.startsWith("content://")) {
+            
+            val permanentPhotoUri = if (photoUri != null && photoUri.startsWith("content:
                 dataStoreManager.saveImageToInternalStorage(photoUri)
             } else {
                 photoUri
@@ -60,3 +60,5 @@ class ProfilesViewModel(
         }
     }
 }
+
+

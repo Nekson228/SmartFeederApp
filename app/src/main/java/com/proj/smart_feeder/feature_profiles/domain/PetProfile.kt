@@ -12,3 +12,4 @@ data class PetProfile(
     val photoUri: String? = null,
     val feedingStats: List<Float> = listOf(0.4f, 0.8f, 0.6f, 1f, 0.7f, 0.9f, 0.5f)
 )
+
