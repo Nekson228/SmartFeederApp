@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil3.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.delay
 import com.proj.smart_feeder.feature_profiles.domain.PetProfile
 import org.koin.androidx.compose.koinViewModel
 
@@ -254,6 +255,19 @@ fun PetProfileContent(
     var weight by remember(profile.id) { mutableStateOf(profile.weight) }
     var photoUri by remember(profile.id) { mutableStateOf(profile.photoUri) }
 
+    LaunchedEffect(name, breed, age, weight, photoUri) {
+        val isChanged = name != profile.name ||
+                breed != profile.breed ||
+                age != profile.age ||
+                weight != profile.weight ||
+                photoUri != profile.photoUri
+
+        if (isChanged) {
+            delay(1000)
+            onSave(name, breed, age, weight, photoUri)
+        }
+    }
+
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -420,12 +434,6 @@ fun PetProfileContent(
             }
         }
 
-        Button(
-            onClick = { onSave(name, breed, age, weight, photoUri) },
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-        ) {
-            Text("Сохранить изменения")
-        }
         Spacer(modifier = Modifier.height(100.dp))
     }
 }
