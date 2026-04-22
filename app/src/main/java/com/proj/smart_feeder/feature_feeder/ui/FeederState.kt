@@ -1,5 +1,6 @@
 package com.proj.smart_feeder.feature_feeder.ui
 
+import com.proj.smart_feeder.feature_feeder.domain.FeedingSchedule
 import kotlinx.datetime.Instant
 
 data class FeederState(
@@ -8,6 +9,6 @@ data class FeederState(
     val maxFoodCapacityGrams: Float = 1000f,
     val lastSeenTimestamp: Instant? = null,
     val recentFeedings: List<String> = emptyList(),
+    val schedules: List<FeedingSchedule> = emptyList(),
     val errorMessage: String? = null
 )
-

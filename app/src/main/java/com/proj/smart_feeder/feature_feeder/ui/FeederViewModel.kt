@@ -24,9 +24,13 @@ class FeederViewModel(private val repository: FeederRepository) : ViewModel() {
     private fun loadData() {
         combine(
             repository.getFeederState(),
-            repository.getRecentFeedings()
-        ) { feederState, feedings ->
-            feederState.copy(recentFeedings = feedings)
+            repository.getRecentFeedings(),
+            repository.getSchedules()
+        ) { feederState, feedings, schedules ->
+            feederState.copy(
+                recentFeedings = feedings,
+                schedules = schedules
+            )
         }.onEach { newState ->
             _uiState.value = newState
         }.launchIn(viewModelScope)

@@ -105,6 +105,36 @@ fun FeederScreen(viewModel: FeederViewModel = koinViewModel()) {
         }
 
         Spacer(modifier = Modifier.height(24.dp))
+        
+        if (state.schedules.isNotEmpty()) {
+            Text("Расписание", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            state.schedules.forEach { schedule ->
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(
+                                text = "${schedule.startTime} - ${schedule.endTime}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Switch(
+                            checked = schedule.isEnabled,
+                            onCheckedChange = { /* TODO: Toggle schedule */ }
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
         Text("Последние кормления", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
 
         if (state.recentFeedings.isEmpty()) {

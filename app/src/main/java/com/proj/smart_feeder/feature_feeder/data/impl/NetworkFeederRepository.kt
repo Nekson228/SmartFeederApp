@@ -3,6 +3,7 @@ package com.proj.smart_feeder.feature_feeder.data.impl
 import com.proj.smart_feeder.core.cache.DataStoreManager
 import com.proj.smart_feeder.feature_feeder.data.network.FeederApi
 import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
+import com.proj.smart_feeder.feature_feeder.domain.FeedingSchedule
 import com.proj.smart_feeder.feature_feeder.ui.FeederState
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
@@ -59,6 +60,15 @@ class NetworkFeederRepository(
         try {
             val history = api.getRecentFeedings()
             emit(history)
+        } catch (e: Exception) {
+            emit(emptyList())
+        }
+    }
+
+    override fun getSchedules(): Flow<List<FeedingSchedule>> = flow {
+        try {
+            val schedules = api.getSchedules("3fa85f64-5717-4562-b3fc-2c963f66afa6")
+            emit(schedules)
         } catch (e: Exception) {
             emit(emptyList())
         }
