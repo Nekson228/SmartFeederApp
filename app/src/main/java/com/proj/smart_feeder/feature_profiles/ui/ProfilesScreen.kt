@@ -101,7 +101,7 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
 
     if (showStatsBottomSheet && selectedProfileForStats != null) {
         ModalBottomSheet(
-            onDismissRequest = { },
+            onDismissRequest = { showStatsBottomSheet = false },
             sheetState = sheetState,
             containerColor = MaterialTheme.colorScheme.surface,
             dragHandle = { BottomSheetDefaults.DragHandle() }
