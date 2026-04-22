@@ -27,4 +27,8 @@ class DummyFeederRepository : FeederRepository {
             )
         )
     }
+
+    override suspend fun feedNow(): Result<Unit> {
+        return Result.success(Unit)
+    }
 }

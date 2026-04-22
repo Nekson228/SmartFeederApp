@@ -9,7 +9,6 @@ import coil3.memory.MemoryCache
 import coil3.request.CachePolicy
 import coil3.request.crossfade
 import com.proj.smart_feeder.di.appModule
-import com.proj.smart_feeder.di.cacheModule
 import com.proj.smart_feeder.di.networkModule
 import okio.Path.Companion.toPath
 import org.koin.android.ext.koin.androidContext
@@ -22,7 +21,7 @@ class SmartFeederApp : Application(), SingletonImageLoader.Factory {
         startKoin {
             androidLogger()
             androidContext(this@SmartFeederApp)
-            modules(appModule, cacheModule, networkModule)
+            modules(appModule, networkModule)
         }
     }
 

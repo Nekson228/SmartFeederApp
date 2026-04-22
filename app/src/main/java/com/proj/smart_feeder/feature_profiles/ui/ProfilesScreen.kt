@@ -190,7 +190,9 @@ fun PetProfileContent(
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        photoUri = uri?.toString()
+        if (uri != null) {
+            photoUri = uri.toString()
+        }
     }
 
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {

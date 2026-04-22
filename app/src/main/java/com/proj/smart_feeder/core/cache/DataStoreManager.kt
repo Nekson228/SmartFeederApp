@@ -1,11 +1,14 @@
 package com.proj.smart_feeder.core.cache
 
 import android.content.Context
+import android.net.Uri
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.io.File
+import java.io.FileOutputStream
 
 private val Context.dataStore by preferencesDataStore(name = "smart_feeder_cache")
 
@@ -26,6 +29,28 @@ class DataStoreManager(private val context: Context) {
     fun getFromCache(key: androidx.datastore.preferences.core.Preferences.Key<String>): Flow<String?> {
         return context.dataStore.data.map { preferences ->
             preferences[key]
+        }
+    }
+
+    /**
+     * Копирует изображение из внешнего URI во внутреннюю папку приложения.
+     * Это гарантирует, что фото не пропадет, если пользователь удалит его из галереи.
+     */
+    fun saveImageToInternalStorage(uriString: String): String? {
+        return try {
+            val uri = Uri.parse(uriString)
+            val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+            val fileName = "pet_photo_${System.currentTimeMillis()}.jpg"
+            val file = File(context.filesDir, fileName)
+            
+            FileOutputStream(file).use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+            
+            Uri.fromFile(file).toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 }

@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface FeederRepository {
     fun getFeederState(): Flow<FeederState>
     fun getRecentFeedings(): Flow<List<String>>
+    suspend fun feedNow(): Result<Unit>
 }

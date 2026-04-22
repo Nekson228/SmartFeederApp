@@ -2,51 +2,60 @@ package com.proj.smart_feeder.feature_profiles.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.proj.smart_feeder.feature_profiles.domain.PetProfile
+import com.proj.smart_feeder.core.cache.DataStoreManager
 import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onStart
 
 class ProfilesViewModel(
-    private val repository: ProfilesRepository
+    private val repository: ProfilesRepository,
+    private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProfilesState())
     val uiState: StateFlow<ProfilesState> = _uiState.asStateFlow()
 
     init {
-        loadProfiles()
+        observeProfiles()
     }
 
-    private fun loadProfiles() {
+    private fun observeProfiles() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            repository.getProfiles().collect { profiles ->
-                _uiState.update {
-                    it.copy(
-                        profiles = profiles,
-                        isLoading = false
-                    )
+            repository.getProfiles()
+                .onStart { _uiState.update { it.copy(isLoading = true) } }
+                .collect { profiles ->
+                    _uiState.update {
+                        it.copy(
+                            profiles = profiles,
+                            isLoading = false
+                        )
+                    }
                 }
-            }
         }
     }
 
     fun updateProfile(id: String, name: String, breed: String, age: String, weight: String, photoUri: String?) {
         viewModelScope.launch {
+            // Если пришел новый URI (из галереи), копируем его во внутреннюю память
+            val permanentPhotoUri = if (photoUri != null && photoUri.startsWith("content://")) {
+                dataStoreManager.saveImageToInternalStorage(photoUri)
+            } else {
+                photoUri
+            }
+
             val currentProfile = _uiState.value.profiles.find { it.id == id }
-            currentProfile?.let {
-                val updated = it.copy(
+            if (currentProfile != null) {
+                val updated = currentProfile.copy(
                     name = name,
                     breed = breed,
                     age = age,
                     weight = weight,
-                    photoUri = photoUri
+                    photoUri = permanentPhotoUri
                 )
                 repository.updateProfile(updated)
-                loadProfiles()
             }
         }
     }
