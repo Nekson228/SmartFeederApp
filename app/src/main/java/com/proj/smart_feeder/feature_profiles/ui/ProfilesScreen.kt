@@ -255,18 +255,11 @@ fun PetProfileContent(
     var weight by remember(profile.id) { mutableStateOf(profile.weight) }
     var photoUri by remember(profile.id) { mutableStateOf(profile.photoUri) }
 
-    LaunchedEffect(name, breed, age, weight, photoUri) {
-        val isChanged = name != profile.name ||
-                breed != profile.breed ||
-                age != profile.age ||
-                weight != profile.weight ||
-                photoUri != profile.photoUri
-
-        if (isChanged) {
-            delay(1000)
-            onSave(name, breed, age, weight, photoUri)
-        }
-    }
+    val isChanged = name != profile.name ||
+            breed != profile.breed ||
+            age != profile.age ||
+            weight != profile.weight ||
+            photoUri != profile.photoUri
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -375,6 +368,18 @@ fun PetProfileContent(
                     }
                 }
             }
+        }
+
+        Button(
+            onClick = { onSave(name, breed, age, weight, photoUri) },
+            enabled = isChanged,
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isChanged) MaterialTheme.colorScheme.primary else Color.LightGray,
+                contentColor = Color.White
+            )
+        ) {
+            Text("Сохранить изменения")
         }
 
         Spacer(modifier = Modifier.height(24.dp))
