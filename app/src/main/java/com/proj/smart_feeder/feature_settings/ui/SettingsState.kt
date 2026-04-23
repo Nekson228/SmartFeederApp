@@ -6,6 +6,7 @@ data class SettingsState(
     val isDarkMode: Boolean = true,
     val notificationSettings: List<NotificationSetting> = emptyList(),
     val cacheSizeMb: Int = 124,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val bowlId: String? = null
 )
 

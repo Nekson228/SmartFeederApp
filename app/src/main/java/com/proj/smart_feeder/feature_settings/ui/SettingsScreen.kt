@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.Icons
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -58,6 +61,61 @@ fun SettingsScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
                 Text("${uiState.cacheSizeMb} МБ")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("Устройство", color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)
+        
+        var isEditingBowlId by remember { mutableStateOf(false) }
+        var bowlIdInput by remember { mutableStateOf("") }
+
+        LaunchedEffect(isEditingBowlId) {
+            if (isEditingBowlId) {
+                bowlIdInput = uiState.bowlId ?: ""
+            }
+        }
+
+        Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("ID кормушки", color = MaterialTheme.colorScheme.onSurface)
+                if (isEditingBowlId) {
+                    IconButton(onClick = {
+                        viewModel.saveBowlId(bowlIdInput)
+                        isEditingBowlId = false
+                    }) {
+                        Icon(Icons.Default.Check, contentDescription = "Сохранить", tint = MaterialTheme.colorScheme.primary)
+                    }
+                } else {
+                    IconButton(onClick = { isEditingBowlId = true }) {
+                        Icon(Icons.Default.Edit, contentDescription = "Редактировать", modifier = Modifier.size(20.dp))
+                    }
+                }
+            }
+            
+            if (isEditingBowlId) {
+                OutlinedTextField(
+                    value = bowlIdInput,
+                    onValueChange = { bowlIdInput = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                    )
+                )
+            } else {
+                Text(
+                    text = uiState.bowlId ?: "Не задан",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
             }
         }
     }

@@ -27,6 +27,17 @@ class SettingsViewModel(
                 }
             }
         }
+        viewModelScope.launch {
+            repository.getBowlId().collect { id ->
+                _uiState.update { it.copy(bowlId = id) }
+            }
+        }
+    }
+
+    fun saveBowlId(id: String) {
+        viewModelScope.launch {
+            repository.saveBowlId(id)
+        }
     }
 
     fun toggleDarkMode(enabled: Boolean) {

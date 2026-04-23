@@ -36,6 +36,61 @@ fun FeederScreen(viewModel: FeederViewModel = koinViewModel()) {
         return
     }
 
+    if (state.bowlId.isNullOrBlank()) {
+        var bowlIdInput by remember { mutableStateOf("") }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(
+                    Icons.Default.SettingsInputComponent,
+                    contentDescription = null,
+                    modifier = Modifier.size(100.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.height(24.dp))
+                Text(
+                    text = "Добро пожаловать!",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                    text = "Введите ID вашей кормушки для начала работы",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+                OutlinedTextField(
+                    value = bowlIdInput,
+                    onValueChange = { bowlIdInput = it },
+                    label = { Text("ID кормушки") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                    )
+                )
+                Spacer(Modifier.height(32.dp))
+                Button(
+                    onClick = { if (bowlIdInput.isNotBlank()) viewModel.saveBowlId(bowlIdInput) },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    enabled = bowlIdInput.isNotBlank()
+                ) {
+                    Text("Подключить", fontSize = 18.sp)
+                }
+            }
+        }
+        return
+    }
+
     Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
         Row(
             modifier = Modifier.fillMaxWidth(),
