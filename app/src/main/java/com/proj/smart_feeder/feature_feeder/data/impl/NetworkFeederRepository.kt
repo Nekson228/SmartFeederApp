@@ -71,7 +71,7 @@ class NetworkFeederRepository(
     override fun getSchedules(): Flow<List<FeedingSchedule>> = refreshSignal.flatMapLatest {
         flow {
             try {
-                val userId = "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                val userId = "3fa85f64-5717-4562-b3fc-2c963f66afa6" // TODO Replace with actual user ID
                 val response = api.getSchedules(userId)
 
                 // Преобразуем [[480, 720], ...] в List<FeedingSchedule>

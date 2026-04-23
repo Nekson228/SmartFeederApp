@@ -58,6 +58,14 @@ class DataStoreProfilesRepository(
         dataStoreManager.saveToCache(DataStoreManager.PROFILES_KEY, json.encodeToString(profileListSerializer, newList))
     }
 
+    override suspend fun getCats(): List<PetProfile> {
+        return emptyList() // DataStore repository doesn't fetch from network
+    }
+
+    override suspend fun getFeedingHistory(petId: String, limit: Int): List<String> {
+        return emptyList()
+    }
+
     private fun getDefaultProfiles() = listOf(
         PetProfile(
             id = "1",

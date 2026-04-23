@@ -62,4 +62,12 @@ class DummyProfilesRepository : ProfilesRepository {
             list.filter { it.id != profileId }
         }
     }
+
+    override suspend fun getCats(): List<PetProfile> {
+        return _profiles.value
+    }
+
+    override suspend fun getFeedingHistory(petId: String, limit: Int): List<String> {
+        return _profiles.value.find { it.id == petId }?.feedingHistory?.take(limit) ?: emptyList()
+    }
 }

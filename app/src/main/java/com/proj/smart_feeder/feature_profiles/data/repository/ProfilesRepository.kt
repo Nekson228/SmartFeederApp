@@ -7,5 +7,7 @@ interface ProfilesRepository {
     fun getProfiles(): Flow<List<PetProfile>>
     suspend fun updateProfile(updatedProfile: PetProfile)
     suspend fun deleteProfile(profileId: String)
+    suspend fun getCats(): List<PetProfile>
+    suspend fun getFeedingHistory(petId: String, limit: Int = 5): List<String>
 }
 

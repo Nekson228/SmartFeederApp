@@ -31,8 +31,19 @@ class ProfilesViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeProfiles() {
         viewModelScope.launch {
+            // Сначала пробуем получить данные из сети
+            try {
+                val remoteProfiles = repository.getCats()
+                if (remoteProfiles.isNotEmpty()) {
+                    _uiState.update { it.copy(profiles = remoteProfiles, isLoading = false) }
+                    // Можно также обновить локальный кэш, если нужно
+                }
+            } catch (e: Exception) {
+                // Если сеть упала, работаем с локальными данными
+            }
+
             repository.getProfiles()
-                .onStart { _uiState.update { it.copy(isLoading = true) } }
+                .onStart { _uiState.update { it.copy(isLoading = _uiState.value.profiles.isEmpty()) } }
                 .flatMapLatest { profiles ->
                     if (profiles.isEmpty()) return@flatMapLatest flowOf(profiles to emptyMap<String, String?>())
 
