@@ -11,8 +11,8 @@ interface FeederApi {
     @GET("status")
     suspend fun getFeederState(): FeederStateResponse
 
-    @GET("api/v1/feeder/history") 
-    suspend fun getRecentFeedings(): List<String>
+    @GET("history/user/{user_id}/recent")
+    suspend fun getRecentFeedings(@Path("user_id") userId: String): List<FeedingHistoryResponse>
 
     @POST("schedules/")
     suspend fun addSchedule(@Body request: ScheduleRequest)

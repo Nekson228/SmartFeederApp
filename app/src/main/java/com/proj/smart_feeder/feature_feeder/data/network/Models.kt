@@ -29,3 +29,13 @@ data class SchedulesResponse(
     val schedules: List<List<Int>>
 )
 
+@Serializable
+data class FeedingHistoryResponse(
+    val id: String,
+    @SerialName("pet_id")
+    val petId: String,
+    val timestamp: Instant,
+    @SerialName("amount_eaten")
+    val amountEaten: Float
+)
+
