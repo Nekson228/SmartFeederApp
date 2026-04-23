@@ -3,12 +3,16 @@ package com.proj.smart_feeder.feature_feeder.data.impl
 import com.proj.smart_feeder.core.cache.DataStoreManager
 import com.proj.smart_feeder.feature_feeder.data.network.FeederApi
 import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
+import com.proj.smart_feeder.feature_feeder.data.network.FeedingHistoryResponse
+import com.proj.smart_feeder.feature_feeder.domain.FeedingHistory
 import com.proj.smart_feeder.feature_feeder.domain.FeedingSchedule
 import com.proj.smart_feeder.feature_feeder.ui.FeederState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
 import com.proj.smart_feeder.feature_feeder.data.network.FeederStateResponse
+
+// const val userId = "f1ba194f-eeec-41e3-9085-e14176c83e8c"
 
 class NetworkFeederRepository(
     private val api: FeederApi,
@@ -58,23 +62,30 @@ class NetworkFeederRepository(
         }.distinctUntilChanged()
     }
 
-    override fun getRecentFeedings(): Flow<List<String>> = flow {
+    override fun getRecentFeedings(): Flow<List<FeedingHistory>> = flow {
         try {
-            val history = api.getRecentFeedings()
-            emit(history)
+            val history = api.getRecentFeedings(userId)
+            emit(history.map { it.toDomain() })
         } catch (e: Exception) {
             emit(emptyList())
         }
+    }
+
+    private fun FeedingHistoryResponse.toDomain(): FeedingHistory {
+        return FeedingHistory(
+            id = id,
+            petId = petId,
+            timestamp = timestamp,
+            amountEaten = amountEaten
+        )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getSchedules(): Flow<List<FeedingSchedule>> = refreshSignal.flatMapLatest {
         flow {
             try {
-                val userId = "3fa85f64-5717-4562-b3fc-2c963f66afa6" // TODO Replace with actual user ID
                 val response = api.getSchedules(userId)
 
-                // Преобразуем [[480, 720], ...] в List<FeedingSchedule>
                 val domainSchedules = response.schedules.map { pair ->
                     FeedingSchedule(
                         userId = userId,
@@ -85,14 +96,13 @@ class NetworkFeederRepository(
                 }
                 emit(domainSchedules)
             } catch (e: Exception) {
-                e.printStackTrace() // Добавьте это, чтобы видеть ошибки в Logcat!
+                e.printStackTrace()
                 emit(emptyList())
             }
         }
     }
 
     override suspend fun addSchedule(startTimeSeconds: Int, endTimeSeconds: Int) {
-        val userId = "3fa85f64-5717-4562-b3fc-2c963f66afa6" // TODO Replace with actual user ID
         val request = com.proj.smart_feeder.feature_feeder.data.network.ScheduleRequest(
             userId = userId,
             startTime = startTimeSeconds,
