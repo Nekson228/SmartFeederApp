@@ -66,6 +66,10 @@ class DataStoreProfilesRepository(
         return emptyList()
     }
 
+    override suspend fun getLatestImages(petId: String, limit: Int): List<String> {
+        return emptyList()
+    }
+
     private fun getDefaultProfiles() = listOf(
         PetProfile(
             id = "1",

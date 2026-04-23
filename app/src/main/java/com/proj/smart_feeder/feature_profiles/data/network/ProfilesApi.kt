@@ -13,4 +13,10 @@ interface ProfilesApi {
         @retrofit2.http.Path("pet_id") petId: String,
         @retrofit2.http.Query("limit") limit: Int = 10
     ): List<FeedingHistoryDto>
+
+    @GET("images/{pet_id}/latest")
+    suspend fun getLatestImages(
+        @retrofit2.http.Path("pet_id") petId: String,
+        @retrofit2.http.Query("limit") limit: Int = 5
+    ): List<String>
 }

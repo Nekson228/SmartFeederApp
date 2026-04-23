@@ -8,6 +8,7 @@ import org.koin.core.module.dsl.*
 import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
 import com.proj.smart_feeder.feature_feeder.ui.FeederViewModel
 import com.proj.smart_feeder.feature_profiles.data.impl.DataStoreProfilesRepository
+import com.proj.smart_feeder.feature_profiles.data.impl.DummyProfilesRepository
 import com.proj.smart_feeder.feature_profiles.data.impl.NetworkProfilesRepository
 import com.proj.smart_feeder.feature_settings.data.impl.DummySettingsRepository
 import com.proj.smart_feeder.feature_settings.data.repository.SettingsRepository
@@ -21,7 +22,6 @@ val appModule = module {
     single { DataStoreManager(get()) }
     single<FeederRepository> { NetworkFeederRepository(get(), get()) }
     // single<FeederRepository> { com.proj.smart_feeder.feature_feeder.data.impl.DummyFeederRepository() }
-    // single<ProfilesRepository> { DataStoreProfilesRepository(get()) }
     single<ProfilesRepository> { NetworkProfilesRepository(get()) }
     single<SettingsRepository> { DummySettingsRepository() }
 

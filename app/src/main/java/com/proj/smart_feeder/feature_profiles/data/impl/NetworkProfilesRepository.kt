@@ -29,6 +29,17 @@ class NetworkProfilesRepository(
                 val history = try {
                     api.getFeedingHistory(dto.id, 7)
                 } catch (e: Exception) {
+                    android.util.Log.e("NetworkRepository", "Error fetching history for ${dto.id}", e)
+                    emptyList()
+                }
+
+                val images = try {
+                    api.getLatestImages(dto.id, 5).map { base64 ->
+                        if (base64.startsWith("data:image")) base64
+                        else "data:image/jpeg;base64,$base64"
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.e("NetworkRepository", "Error fetching images for ${dto.id}", e)
                     emptyList()
                 }
 
@@ -39,10 +50,12 @@ class NetworkProfilesRepository(
                     age = "${dto.age} года/лет",
                     weight = "${dto.weight} кг",
                     feedingStats = history.map { it.amountEaten },
-                    feedingHistory = history.map { "${it.timestamp} - ${it.amountEaten}г" }
+                    feedingHistory = history.map { "${it.timestamp} - ${it.amountEaten}г" },
+                    latestImages = images
                 )
             }
         } catch (e: Exception) {
+            android.util.Log.e("NetworkRepository", "Error fetching cats", e)
             emptyList()
         }
     }
@@ -51,6 +64,17 @@ class NetworkProfilesRepository(
         return try {
             val history = api.getFeedingHistory(petId, limit)
             history.map { "${it.timestamp} - ${it.amountEaten}г" }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    override suspend fun getLatestImages(petId: String, limit: Int): List<String> {
+        return try {
+            api.getLatestImages(petId, limit).map { base64 ->
+                if (base64.startsWith("data:image")) base64
+                else "data:image/jpeg;base64,$base64"
+            }
         } catch (e: Exception) {
             emptyList()
         }

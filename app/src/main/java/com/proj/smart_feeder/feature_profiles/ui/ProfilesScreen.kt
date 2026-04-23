@@ -431,7 +431,7 @@ fun PetProfileContent(
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Объем за последние 7 дней",
+                    "Объем за последние дни",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.secondary
                 )
@@ -441,23 +441,31 @@ fun PetProfileContent(
         Spacer(modifier = Modifier.height(24.dp))
         Text("Недавние фото с кормушки", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
 
-        LazyRow(contentPadding = PaddingValues(vertical = 8.dp)) {
-            items(5) { index ->
-                Card(Modifier.size(140.dp).padding(end = 12.dp), shape = RoundedCornerShape(16.dp)) {
-                    Box(
-                        Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant),
-                        contentAlignment = Alignment.Center
+        if (profile.latestImages.isEmpty()) {
+            Text(
+                "Фотографий пока нет",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+        } else {
+            LazyRow(
+                contentPadding = PaddingValues(vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(profile.latestImages.size) { index ->
+                    val imageUrl = profile.latestImages[index]
+                    Card(
+                        modifier = Modifier
+                            .size(140.dp)
+                            .clickable { onImageClick(imageUrl) },
+                        shape = RoundedCornerShape(16.dp)
                     ) {
-                        Icon(
-                            Icons.Default.Image,
-                            null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(0.3f),
-                            modifier = Modifier.size(40.dp)
-                        )
-                        Text(
-                            "Photo #$index",
-                            modifier = Modifier.align(Alignment.BottomCenter).padding(4.dp),
-                            fontSize = 10.sp
+                        Image(
+                            painter = rememberAsyncImagePainter(imageUrl),
+                            contentDescription = "Фото с кормушки $index",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
                         )
                     }
                 }
