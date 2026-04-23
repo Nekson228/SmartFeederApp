@@ -4,17 +4,17 @@ import com.proj.smart_feeder.core.cache.DataStoreManager
 import com.proj.smart_feeder.feature_profiles.data.network.ProfilesApi
 import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
 import com.proj.smart_feeder.feature_profiles.domain.PetProfile
+import com.proj.smart_feeder.feature_settings.data.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class NetworkProfilesRepository(
     private val api: ProfilesApi,
-    private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: DataStoreManager,
+    private val settingsRepository: SettingsRepository
 ) : ProfilesRepository {
 
     private val json = Json { ignoreUnknownKeys = true }
@@ -71,7 +71,8 @@ class NetworkProfilesRepository(
 
     override suspend fun getCats(): List<PetProfile> {
         return try {
-            val response = api.getCats("bb73bc44-4030-462b-a567-f3754a7eb31e")
+            val bowlId = settingsRepository.getBowlId().firstOrNull() ?: return emptyList()
+            val response = api.getCats(bowlId)
             response.map { dto ->
                 val history = try {
                     api.getFeedingHistory(dto.id, 7)

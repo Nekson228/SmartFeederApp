@@ -11,12 +11,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
 import com.proj.smart_feeder.feature_feeder.data.network.FeederStateResponse
-
-const val userId = "bb73bc44-4030-462b-a567-f3754a7eb31e"
+import com.proj.smart_feeder.feature_settings.data.repository.SettingsRepository
 
 class NetworkFeederRepository(
     private val api: FeederApi,
-    private val cache: DataStoreManager
+    private val cache: DataStoreManager,
+    private val settingsRepository: SettingsRepository
 ) : FeederRepository {
 
     private val json = Json { ignoreUnknownKeys = true }
@@ -62,12 +62,16 @@ class NetworkFeederRepository(
         }.distinctUntilChanged()
     }
 
-    override fun getRecentFeedings(): Flow<List<FeedingHistory>> = flow {
-        try {
-            val history = api.getRecentFeedings(userId)
-            emit(history.map { it.toDomain() })
-        } catch (e: Exception) {
-            emit(emptyList())
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getRecentFeedings(): Flow<List<FeedingHistory>> = settingsRepository.getBowlId().flatMapLatest { bowlId ->
+        if (bowlId == null) return@flatMapLatest flowOf(emptyList())
+        flow {
+            try {
+                val history = api.getRecentFeedings(bowlId)
+                emit(history.map { it.toDomain() })
+            } catch (e: Exception) {
+                emit(emptyList())
+            }
         }
     }
 
@@ -81,14 +85,18 @@ class NetworkFeederRepository(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getSchedules(): Flow<List<FeedingSchedule>> = refreshSignal.flatMapLatest {
+    override fun getSchedules(): Flow<List<FeedingSchedule>> = combine(
+        settingsRepository.getBowlId(),
+        refreshSignal
+    ) { bowlId, _ -> bowlId }.flatMapLatest { bowlId ->
+        if (bowlId == null) return@flatMapLatest flowOf(emptyList())
         flow {
             try {
-                val response = api.getSchedules(userId)
+                val response = api.getSchedules(bowlId)
 
                 val domainSchedules = response.schedules.map { pair ->
                     FeedingSchedule(
-                        userId = userId,
+                        userId = bowlId,
                         startTimeSeconds = pair[0],
                         endTimeSeconds = pair[1],
                         isEnabled = true
@@ -103,8 +111,9 @@ class NetworkFeederRepository(
     }
 
     override suspend fun addSchedule(startTimeSeconds: Int, endTimeSeconds: Int) {
+        val bowlId = settingsRepository.getBowlId().firstOrNull() ?: return
         val request = com.proj.smart_feeder.feature_feeder.data.network.ScheduleRequest(
-            userId = userId,
+            userId = bowlId,
             startTime = startTimeSeconds,
             endTime = endTimeSeconds
         )

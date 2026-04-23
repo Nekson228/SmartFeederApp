@@ -18,8 +18,8 @@ import org.koin.android.ext.koin.androidContext
 
 val appModule = module {
     single { DataStoreManager(get()) }
-    single<FeederRepository> { NetworkFeederRepository(get(), get()) }
-    single<ProfilesRepository> { NetworkProfilesRepository(get(), get()) }
+    single<FeederRepository> { NetworkFeederRepository(get(), get(), get()) }
+    single<ProfilesRepository> { NetworkProfilesRepository(get(), get(), get()) }
     single<SettingsRepository> { DataStoreSettingsRepository(get()) }
 
     factory { (context: Context) -> ReportPrinter(context) }
