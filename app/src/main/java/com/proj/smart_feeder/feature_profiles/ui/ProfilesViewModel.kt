@@ -5,27 +5,36 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.proj.smart_feeder.core.cache.DataStoreManager
 import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
+import com.proj.smart_feeder.feature_settings.data.repository.SettingsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.onStart
 
 class ProfilesViewModel(
     private val repository: ProfilesRepository,
-    private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: DataStoreManager,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProfilesState())
     val uiState: StateFlow<ProfilesState> = _uiState.asStateFlow()
 
     init {
         observeProfiles()
+        observeBowlId()
+    }
+
+    private fun observeBowlId() {
+        viewModelScope.launch {
+            settingsRepository.getBowlId().collect { id ->
+                _uiState.update { it.copy(bowlId = id) }
+            }
+        }
+    }
+
+    fun saveBowlId(id: String) {
+        viewModelScope.launch {
+            settingsRepository.saveBowlId(id)
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

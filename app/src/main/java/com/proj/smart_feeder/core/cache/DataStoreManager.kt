@@ -18,6 +18,7 @@ class DataStoreManager(private val context: Context) {
         val FEEDER_STATE_KEY = stringPreferencesKey("feeder_state")
         val PROFILES_KEY = stringPreferencesKey("profiles")
         val SETTINGS_KEY = stringPreferencesKey("settings")
+        val BOWL_ID_KEY = stringPreferencesKey("bowl_id")
         fun getPetPhotoKey(petId: String) = stringPreferencesKey("pet_photo_$petId")
     }
 

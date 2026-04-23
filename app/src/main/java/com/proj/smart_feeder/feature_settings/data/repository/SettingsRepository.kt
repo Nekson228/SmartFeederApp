@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
     fun getSettings(): Flow<AppSettings>
+    fun getBowlId(): Flow<String?>
+    suspend fun saveBowlId(id: String)
     suspend fun toggleDarkMode(enabled: Boolean)
     suspend fun toggleNotification(id: String, enabled: Boolean)
     suspend fun clearCache()

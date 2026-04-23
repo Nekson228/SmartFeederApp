@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
 import com.proj.smart_feeder.feature_feeder.data.network.FeederStateResponse
 
-// const val userId = "f1ba194f-eeec-41e3-9085-e14176c83e8c"
+const val userId = "bb73bc44-4030-462b-a567-f3754a7eb31e"
 
 class NetworkFeederRepository(
     private val api: FeederApi,

@@ -7,10 +7,8 @@ import org.koin.dsl.module
 import org.koin.core.module.dsl.*
 import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
 import com.proj.smart_feeder.feature_feeder.ui.FeederViewModel
-import com.proj.smart_feeder.feature_profiles.data.impl.DataStoreProfilesRepository
-import com.proj.smart_feeder.feature_profiles.data.impl.DummyProfilesRepository
 import com.proj.smart_feeder.feature_profiles.data.impl.NetworkProfilesRepository
-import com.proj.smart_feeder.feature_settings.data.impl.DummySettingsRepository
+import com.proj.smart_feeder.feature_settings.data.impl.DataStoreSettingsRepository
 import com.proj.smart_feeder.feature_settings.data.repository.SettingsRepository
 import com.proj.smart_feeder.feature_settings.ui.SettingsViewModel
 import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
@@ -21,14 +19,13 @@ import org.koin.android.ext.koin.androidContext
 val appModule = module {
     single { DataStoreManager(get()) }
     single<FeederRepository> { NetworkFeederRepository(get(), get()) }
-    // single<FeederRepository> { com.proj.smart_feeder.feature_feeder.data.impl.DummyFeederRepository() }
-    single<ProfilesRepository> { NetworkProfilesRepository(get()) }
-    single<SettingsRepository> { DummySettingsRepository() }
+    single<ProfilesRepository> { NetworkProfilesRepository(get(), get()) }
+    single<SettingsRepository> { DataStoreSettingsRepository(get()) }
 
     factory { (context: Context) -> ReportPrinter(context) }
 
     viewModelOf(::FeederViewModel)
-    viewModel { ProfilesViewModel(get(), get()) }
+    viewModel { ProfilesViewModel(get(), get(), get()) }
     viewModelOf(::SettingsViewModel)
 }
 

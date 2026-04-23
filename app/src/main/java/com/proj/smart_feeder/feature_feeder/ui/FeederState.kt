@@ -11,5 +11,6 @@ data class FeederState(
     val lastSeenTimestamp: Instant? = null,
     val recentFeedings: List<FeedingHistory> = emptyList(),
     val schedules: List<FeedingSchedule> = emptyList(),
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val bowlId: String? = null
 )
