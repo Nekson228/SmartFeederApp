@@ -17,3 +17,28 @@ data class PetProfileDto(
     @SerialName("feeding_history")
     val feedingHistory: List<String> = emptyList()
 )
+
+@Serializable
+data class CatDto(
+    val id: String,
+    @SerialName("owner_id")
+    val ownerId: String,
+    val name: String,
+    val weight: Float,
+    val age: Int,
+    val breed: String,
+    @SerialName("target_portion")
+    val targetPortion: Float
+)
+
+typealias CatsResponseDto = List<CatDto>
+
+@Serializable
+data class FeedingHistoryDto(
+    val id: String,
+    @SerialName("pet_id")
+    val petId: String,
+    val timestamp: String,
+    @SerialName("amount_eaten")
+    val amountEaten: Float
+)

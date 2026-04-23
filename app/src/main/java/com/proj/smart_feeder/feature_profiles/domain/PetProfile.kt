@@ -9,5 +9,6 @@ data class PetProfile(
     val age: String,
     val weight: String,
     val feedingStats: List<Float> = emptyList(),
-    val feedingHistory: List<String> = emptyList()
+    val feedingHistory: List<String> = emptyList(),
+    val latestImages: List<String> = emptyList()
 )
