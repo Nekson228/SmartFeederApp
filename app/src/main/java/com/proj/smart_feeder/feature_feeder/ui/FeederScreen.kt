@@ -15,7 +15,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -141,10 +144,25 @@ fun FeederScreen(viewModel: FeederViewModel = koinViewModel()) {
                     modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
-                    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(Icons.Default.CheckCircle, null, tint = MaterialTheme.colorScheme.tertiary)
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text(feeding, color = MaterialTheme.colorScheme.onSurface)
+                        Column {
+                            val dateTime = feeding.timestamp.toLocalDateTime(TimeZone.currentSystemDefault())
+                            Text(
+                                text = "Порция ${feeding.amountEaten}г",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${dateTime.dayOfMonth}.${dateTime.monthNumber}.${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padStart(2, '0')}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
             }

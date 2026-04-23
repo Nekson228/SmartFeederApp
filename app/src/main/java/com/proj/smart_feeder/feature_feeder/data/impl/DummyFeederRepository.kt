@@ -1,6 +1,7 @@
 package com.proj.smart_feeder.feature_feeder.data.impl
 
 import com.proj.smart_feeder.feature_feeder.data.repository.FeederRepository
+import com.proj.smart_feeder.feature_feeder.domain.FeedingHistory
 import com.proj.smart_feeder.feature_feeder.domain.FeedingSchedule
 import com.proj.smart_feeder.feature_feeder.ui.FeederState
 import kotlinx.coroutines.flow.Flow
@@ -42,12 +43,12 @@ class DummyFeederRepository : FeederRepository {
         )
     }
 
-    override fun getRecentFeedings(): Flow<List<String>> = flow {
+    override fun getRecentFeedings(): Flow<List<FeedingHistory>> = flow {
         emit(
             listOf(
-                "Fed 100g at 2026-06-01 08:00",
-                "Fed 150g at 2026-06-01 12:00",
-                "Fed 200g at 2026-06-01 18:00"
+                FeedingHistory(UUID.randomUUID().toString(), "pet1", Clock.System.now(), 100f),
+                FeedingHistory(UUID.randomUUID().toString(), "pet1", Clock.System.now(), 150f),
+                FeedingHistory(UUID.randomUUID().toString(), "pet1", Clock.System.now(), 200f)
             )
         )
     }
