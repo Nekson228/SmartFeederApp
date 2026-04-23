@@ -1,31 +1,60 @@
 package com.proj.smart_feeder.feature_profiles.data.impl
 
 import com.proj.smart_feeder.feature_profiles.data.network.ProfilesApi
+import com.proj.smart_feeder.feature_profiles.data.network.UpdateProfileRequestDto
 import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
 import com.proj.smart_feeder.feature_profiles.domain.PetProfile
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class NetworkProfilesRepository(
     private val api: ProfilesApi
 ) : ProfilesRepository {
 
-    override fun getProfiles(): Flow<List<PetProfile>> = flow {
-        emit(getCats())
-    }
+    private val _profiles = MutableStateFlow<List<PetProfile>>(emptyList())
+
+    override fun getProfiles(): Flow<List<PetProfile>> = _profiles.asStateFlow()
 
     override suspend fun updateProfile(updatedProfile: PetProfile) {
-        // TODO: Реализовать обновление через API, когда появится соответствующий эндпоинт
+        try {
+            val ageInt = updatedProfile.age.split(" ").firstOrNull()?.toIntOrNull() ?: 0
+            val weightFloat = updatedProfile.weight.split(" ").firstOrNull()?.replace(",", ".")?.toFloatOrNull() ?: 0f
+
+            api.updateProfile(
+                updatedProfile.id,
+                UpdateProfileRequestDto(
+                    name = updatedProfile.name,
+                    breed = updatedProfile.breed,
+                    age = ageInt,
+                    weight = weightFloat
+                )
+            )
+
+            _profiles.update { current ->
+                current.map { if (it.id == updatedProfile.id) updatedProfile else it }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("NetworkRepository", "Error updating profile", e)
+        }
     }
 
     override suspend fun deleteProfile(profileId: String) {
-        // TODO: Реализовать удаление через API, когда появится соответствующий эндпоинт
+        try {
+            api.deleteProfile(profileId)
+            _profiles.update { current ->
+                current.filter { it.id != profileId }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("NetworkRepository", "Error deleting profile", e)
+        }
     }
 
     override suspend fun getCats(): List<PetProfile> {
         return try {
-            val response = api.getCats("a626c97c-c3ca-4297-a943-900979238c2a")
-            response.map { dto ->
+            val response = api.getCats("8e527e3c-15cd-4303-bb5f-2b3a59277403")
+            val profiles = response.map { dto ->
                 val history = try {
                     api.getFeedingHistory(dto.id, 7)
                 } catch (e: Exception) {
@@ -54,6 +83,8 @@ class NetworkProfilesRepository(
                     latestImages = images
                 )
             }
+            _profiles.value = profiles
+            profiles
         } catch (e: Exception) {
             android.util.Log.e("NetworkRepository", "Error fetching cats", e)
             emptyList()

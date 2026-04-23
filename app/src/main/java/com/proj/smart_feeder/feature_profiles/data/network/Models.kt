@@ -42,3 +42,11 @@ data class FeedingHistoryDto(
     @SerialName("amount_eaten")
     val amountEaten: Float
 )
+
+@Serializable
+data class UpdateProfileRequestDto(
+    val name: String,
+    val breed: String,
+    val age: Int,
+    val weight: Float
+)

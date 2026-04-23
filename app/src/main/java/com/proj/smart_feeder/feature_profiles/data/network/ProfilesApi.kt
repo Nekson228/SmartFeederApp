@@ -1,22 +1,38 @@
 package com.proj.smart_feeder.feature_profiles.data.network
 
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PUT
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ProfilesApi {
     @GET("pets/user/{user_id}")
     suspend fun getCats(
-        @retrofit2.http.Path("user_id") userId: String
+        @Path("user_id") userId: String
     ): CatsResponseDto
+
+    @PUT("pets/{pet_id}")
+    suspend fun updateProfile(
+        @Path("pet_id") petId: String,
+        @Body request: UpdateProfileRequestDto
+    )
+
+    @DELETE("pets/{pet_id}")
+    suspend fun deleteProfile(
+        @Path("pet_id") petId: String
+    )
 
     @GET("history/{pet_id}/recent")
     suspend fun getFeedingHistory(
-        @retrofit2.http.Path("pet_id") petId: String,
-        @retrofit2.http.Query("limit") limit: Int = 10
+        @Path("pet_id") petId: String,
+        @Query("limit") limit: Int = 10
     ): List<FeedingHistoryDto>
 
     @GET("images/{pet_id}/latest")
     suspend fun getLatestImages(
-        @retrofit2.http.Path("pet_id") petId: String,
-        @retrofit2.http.Query("limit") limit: Int = 5
+        @Path("pet_id") petId: String,
+        @Query("limit") limit: Int = 5
     ): List<String>
 }
