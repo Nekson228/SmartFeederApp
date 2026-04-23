@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.proj.smart_feeder.core.cache.DataStoreManager
 import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
+import com.proj.smart_feeder.feature_profiles.domain.PetProfile
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -96,6 +97,25 @@ class ProfilesViewModel(
     fun deleteProfile(profileId: String) {
         viewModelScope.launch {
             repository.deleteProfile(profileId)
+        }
+    }
+
+    fun createProfile(
+        name: String,
+        breed: String,
+        age: String,
+        weight: String,
+        photoUri: String?
+    ) {
+        viewModelScope.launch {
+            val newPet = PetProfile(
+                id = "", // Будет назначено репозиторием/API
+                name = name,
+                breed = breed,
+                age = age,
+                weight = weight
+            )
+            repository.createProfile(newPet)
         }
     }
 }

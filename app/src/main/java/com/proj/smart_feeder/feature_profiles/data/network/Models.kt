@@ -28,7 +28,7 @@ data class CatDto(
     val age: Int,
     val breed: String,
     @SerialName("target_portion")
-    val targetPortion: Float
+    val targetPortion: Float = 50f
 )
 
 typealias CatsResponseDto = List<CatDto>
@@ -49,4 +49,16 @@ data class UpdateProfileRequestDto(
     val breed: String,
     val age: Int,
     val weight: Float
+)
+
+@Serializable
+data class CreateProfileRequestDto(
+    @SerialName("owner_id")
+    val ownerId: String,
+    val name: String,
+    val breed: String,
+    val age: Int,
+    val weight: Float,
+    @SerialName("target_portion")
+    val targetPortion: Float = 50f
 )

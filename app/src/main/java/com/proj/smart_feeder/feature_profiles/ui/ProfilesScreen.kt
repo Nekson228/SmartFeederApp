@@ -44,6 +44,7 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
 
     var showStatsBottomSheet by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showCreateDialog by remember { mutableStateOf(false) }
     var fullScreenImageUrl by remember { mutableStateOf<String?>(null) }
     var selectedProfileForStats by remember { mutableStateOf<PetProfile?>(null) }
     val sheetState = rememberModalBottomSheetState()
@@ -68,6 +69,13 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
+                IconButton(onClick = { showCreateDialog = true }) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Добавить питомца",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
 
             if (state.profiles.isNotEmpty()) {
@@ -159,6 +167,16 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
         )
     }
 
+    if (showCreateDialog) {
+        CreatePetDialog(
+            onDismiss = { showCreateDialog = false },
+            onCreate = { name, breed, age, weight ->
+                viewModel.createProfile(name, breed, age, weight, null)
+                showCreateDialog = false
+            }
+        )
+    }
+
     if (fullScreenImageUrl != null) {
         Dialog(
             onDismissRequest = { fullScreenImageUrl = null },
@@ -186,6 +204,66 @@ fun ProfilesScreen(viewModel: ProfilesViewModel = koinViewModel()) {
             }
         }
     }
+}
+
+@Composable
+fun CreatePetDialog(
+    onDismiss: () -> Unit,
+    onCreate: (String, String, String, String) -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    var breed by remember { mutableStateOf("") }
+    var age by remember { mutableStateOf("") }
+    var weight by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Добавить питомца") },
+        text = {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Имя") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = breed,
+                    onValueChange = { breed = it },
+                    label = { Text("Порода") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = age,
+                    onValueChange = { age = it },
+                    label = { Text("Возраст (напр. 2 года)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = weight,
+                    onValueChange = { weight = it },
+                    label = { Text("Вес (напр. 5 кг)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onCreate(name, breed, age, weight) },
+                enabled = name.isNotBlank() && breed.isNotBlank()
+            ) {
+                Text("Создать")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Отмена")
+            }
+        }
+    )
 }
 
 @Composable

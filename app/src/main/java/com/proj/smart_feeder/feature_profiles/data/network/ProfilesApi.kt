@@ -3,6 +3,7 @@ package com.proj.smart_feeder.feature_profiles.data.network
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -18,6 +19,11 @@ interface ProfilesApi {
         @Path("pet_id") petId: String,
         @Body request: UpdateProfileRequestDto
     )
+
+    @POST("pets")
+    suspend fun createProfile(
+        @Body request: CreateProfileRequestDto
+    ): CatDto
 
     @DELETE("pets/{pet_id}")
     suspend fun deleteProfile(

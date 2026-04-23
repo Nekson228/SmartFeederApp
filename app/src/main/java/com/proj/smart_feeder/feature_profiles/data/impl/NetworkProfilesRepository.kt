@@ -1,5 +1,6 @@
 package com.proj.smart_feeder.feature_profiles.data.impl
 
+import com.proj.smart_feeder.feature_profiles.data.network.CreateProfileRequestDto
 import com.proj.smart_feeder.feature_profiles.data.network.ProfilesApi
 import com.proj.smart_feeder.feature_profiles.data.network.UpdateProfileRequestDto
 import com.proj.smart_feeder.feature_profiles.data.repository.ProfilesRepository
@@ -8,6 +9,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+
+
+const val userId = "3b7aae5f-79ab-4680-b1d4-50d8a2cd9c89"
 
 class NetworkProfilesRepository(
     private val api: ProfilesApi
@@ -19,8 +23,7 @@ class NetworkProfilesRepository(
 
     override suspend fun updateProfile(updatedProfile: PetProfile) {
         try {
-            val ageInt = updatedProfile.age.split(" ").firstOrNull()?.toIntOrNull() ?: 0
-            val weightFloat = updatedProfile.weight.split(" ").firstOrNull()?.replace(",", ".")?.toFloatOrNull() ?: 0f
+            val (ageInt, weightFloat) = parseProfileData(updatedProfile)
 
             api.updateProfile(
                 updatedProfile.id,
@@ -40,6 +43,33 @@ class NetworkProfilesRepository(
         }
     }
 
+    override suspend fun createProfile(profile: PetProfile) {
+        try {
+            val (ageInt, weightFloat) = parseProfileData(profile)
+
+            val responseDto = api.createProfile(
+                CreateProfileRequestDto(
+                    ownerId = userId,
+                    name = profile.name,
+                    breed = profile.breed,
+                    age = ageInt,
+                    weight = weightFloat
+                )
+            )
+
+            val newProfile = profile.copy(id = responseDto.id)
+            _profiles.update { current -> current + newProfile }
+        } catch (e: Exception) {
+            android.util.Log.e("NetworkRepository", "Error creating profile", e)
+        }
+    }
+
+    private fun parseProfileData(profile: PetProfile): Pair<Int, Float> {
+        val ageInt = profile.age.split(" ").firstOrNull()?.toIntOrNull() ?: 0
+        val weightFloat = profile.weight.split(" ").firstOrNull()?.replace(",", ".")?.toFloatOrNull() ?: 0f
+        return ageInt to weightFloat
+    }
+
     override suspend fun deleteProfile(profileId: String) {
         try {
             api.deleteProfile(profileId)
@@ -53,7 +83,7 @@ class NetworkProfilesRepository(
 
     override suspend fun getCats(): List<PetProfile> {
         return try {
-            val response = api.getCats("8e527e3c-15cd-4303-bb5f-2b3a59277403")
+            val response = api.getCats(userId)
             val profiles = response.map { dto ->
                 val history = try {
                     api.getFeedingHistory(dto.id, 7)

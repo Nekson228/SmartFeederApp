@@ -53,6 +53,10 @@ class DummyProfilesRepository : ProfilesRepository {
 
     override fun getProfiles(): Flow<List<PetProfile>> = _profiles.asStateFlow()
 
+    override suspend fun createProfile(profile: PetProfile) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun updateProfile(updatedProfile: PetProfile) {
         _profiles.update { list ->
             list.map { if (it.id == updatedProfile.id) updatedProfile else it }

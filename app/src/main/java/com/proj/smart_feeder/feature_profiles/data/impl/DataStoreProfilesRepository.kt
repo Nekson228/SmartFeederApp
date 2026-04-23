@@ -31,6 +31,10 @@ class DataStoreProfilesRepository(
         }
     }
 
+    override suspend fun createProfile(profile: PetProfile) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun updateProfile(updatedProfile: PetProfile) {
         val currentJson = dataStoreManager.getFromCache(DataStoreManager.PROFILES_KEY).firstOrNull()
         val currentList = currentJson?.let {
